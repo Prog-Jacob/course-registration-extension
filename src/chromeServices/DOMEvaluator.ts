@@ -1,11 +1,18 @@
-// // import { DOMMessage, DOMMessageResponse s} from '../types';
-// console.log("Hello World");
-// //Creating Elements
-// var btn = document.createElement("BUTTON")
-// var t = document.createTextNode("CLICK ME555");
-// btn.appendChild(t);
-// //Appending to DOM
-// document.body.appendChild(btn);
+import fetchCourseParams from './fetch_course_params';
+import fetchCourses from './fetch_courses';
+
+async function getCourses() {
+  if (window.location.protocol !== 'chrome-extension:') {
+    const params = await fetchCourseParams();
+    await fetchCourses(...params);
+    const btn = document.createElement('BUTTON');
+    const t = document.createTextNode('CLICK ME');
+    btn.appendChild(t);
+    document.body.appendChild(btn);
+  }
+}
+
+getCourses();
 
 // const messagesFromReactAppListener = (
 //     msg: any,
