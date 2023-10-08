@@ -1,0 +1,23 @@
+{
+  "name": "Course Registeration Assistant",
+  "description": "Avoid the hassle of schedule conflicts, customize your schedule, and register for all your courses with a single click.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Course Registeration Assistant"
+  },
+  "icons": {
+    "16": "favicon-16x16.png",
+    "32": "favicon-32x32.png",
+    "96": "favicon-96x96.png"
+  },
+  "author": "Ahmed.Abdelaziz.GM@gmail.com",
+  "permissions": ["activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["*://sis.ejust.edu.eg/*"],
+      "js": ["./static/js/content.js"]
+    }
+  ]
+}

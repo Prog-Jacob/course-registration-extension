@@ -1,0 +1,39 @@
+.popup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: #000d;
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+.popup-schedule thead tr,
+.popup-schedule thead {
+  background-color: transparent !important;
+}
+
+.popup-schedule .popup-schedule-close {
+  width: 50px;
+  height: 38px;
+  top: 38px;
+  right: 235px;
+  position: relative;
+  line-height: 38px;
+  font-size: 20px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

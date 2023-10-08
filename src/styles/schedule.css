@@ -1,0 +1,37 @@
+.container {
+  width: 520px;
+  margin: 0 auto;
+}
+
+.schedule {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.schedule th,
+.schedule td {
+  padding: 10px 0;
+  border-radius: 0;
+  font: 14px sans-serif;
+  border: 1px solid var(--secondary);
+}
+
+.schedule th {
+  color: #fff;
+  font-weight: bold;
+  border-color: var(--primary);
+  background-color: var(--secondary);
+}
+
+.schedule td.cell {
+  text-align: center;
+  background-color: var(--primary);
+}
+
+.schedule td.toggler {
+  cursor: pointer;
+}
+
+.schedule td.toggler:hover {
+  background-color: var(--check-schedule);
+}

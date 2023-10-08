@@ -1,0 +1,28 @@
+#add-course-table {
+  width: 500px;
+  background-color: #ddd;
+  border-collapse: collapse;
+}
+
+#add-course-table th {
+  background-color: var(--secondary);
+}
+
+input[type='text'] {
+  width: 150px !important;
+}
+
+.required-input::after {
+  content: '*';
+  color: red;
+  margin-left: 5px;
+  vertical-align: bottom;
+  height: 100%;
+  font-size: 20px;
+}
+
+.popup-schedule-close {
+  background: transparent !important;
+  color: var(--primary) !important;
+  border: none !important;
+}

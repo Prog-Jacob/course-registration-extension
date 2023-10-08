@@ -1,0 +1,76 @@
+.course-table {
+  margin: auto;
+  border-collapse: collapse;
+  box-shadow: 0 0 20px #0002;
+}
+
+.course-table * {
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+.course-table > thead {
+  color: #fff;
+  background-color: var(--secondary);
+}
+
+.course-table > thead th,
+.course-table-body > tr > td {
+  padding: 10px 0;
+  text-align: center;
+  width: 70px !important;
+}
+
+.course-table > tbody > tr {
+  border-bottom: 1px solid #f6f6f6;
+  background-color: #f6f6f6;
+}
+
+.course-table > tbody > tr:last-of-type {
+  border-bottom: 2px solid var(--secondary);
+}
+
+.course-table :is(.edit-cell-container, .priority-cell-container) button {
+  width: 20px;
+  height: 20px;
+  color: var(--primary);
+  border-radius: 50px;
+  background-color: var(--secondary);
+  border: 1px solid var(--secondary);
+}
+
+.priority-cell-container button,
+.popup-schedule-close {
+  font-weight: bold;
+  color: var(--secondary) !important;
+  background-color: var(--primary) !important;
+  border: 1px solid var(--primary) !important;
+}
+
+.course-table input,
+select {
+  width: 40px;
+  padding: 5px 0;
+  border-radius: 4px;
+  text-align: center;
+  border: 1px solid var(--background);
+}
+
+.course-table .edit-cell {
+  gap: 5px;
+  display: flex;
+  justify-content: center;
+}
+
+.course-table button:disabled {
+  color: #ddd;
+}
+
+.drag-icon {
+  color: var(--secondary);
+  font-size: 14px;
+}
+
+.course-table > tbody > tr > td:nth-of-type(2) {
+  width: 100px !important;
+}
