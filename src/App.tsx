@@ -14,7 +14,7 @@ function App() {
       <Router>
         <Routes>
           <Route index element={<Home />}></Route>
-          <Route path='/courses' element={<SetOptions data={defaultData} />} />
+          <Route path='/courses' element={<SetOptions />} />
           <Route path='/schedules' element={<ViewSchedules />}></Route>
         </Routes>
       </Router>

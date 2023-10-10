@@ -7,8 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { Alert } from '@mui/material';
 import React from 'react';
 
-function SetOptions({ data }: { data: Course[] }) {
-  data = data.map((course, index) => ({ ...course, priority: index + 1 }));
+function SetOptions() {
   const {
     courses,
     options,
@@ -20,13 +19,12 @@ function SetOptions({ data }: { data: Course[] }) {
     groups: CourseGroups;
     retrievedCourseOptions: CourseOptions;
   } = history.state.usr ?? {
-    courses: [...data],
+    courses: [],
     options: {
       exclude_dates: new Array(40).fill(false),
       maxCredits: 20,
       minCredits: 14,
     },
-    groups: {},
     retrievedCourseOptions: {
       group: 0,
       section: 0,
@@ -35,7 +33,7 @@ function SetOptions({ data }: { data: Course[] }) {
   const [courseOptions, setCourseOptions] = useState<CourseOptions>(retrievedCourseOptions ?? {});
   const [originalData, setOriginalData] = useState<Course[]>(courses);
   const scheduleOptions = useRef<ScheduleOptions>(options);
-  const groupsRef = useRef<CourseGroups>(groups);
+  const groupsRef = useRef<CourseGroups>(groups ?? {});
   const navigate = useNavigate();
 
   useEffect(() => {

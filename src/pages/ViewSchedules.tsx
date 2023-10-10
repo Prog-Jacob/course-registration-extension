@@ -26,7 +26,7 @@ function ViewSchedules() {
   const schedules = useRef<Scheduler | string>(
     (() => {
       try {
-        return new Scheduler(courses, options, groups);
+        return new Scheduler([...courses], { ...options }, { ...groups });
       } catch (e) {
         return (e as Error).message;
       }

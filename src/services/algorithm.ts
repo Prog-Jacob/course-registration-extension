@@ -121,16 +121,17 @@ export default class Scheduler {
   private filterCourses(): void {
     if (this.courses[this.courses.length - 1][0].priority == 1000) this.courses.pop();
 
-    this.courses.forEach((level) => {
-      level.forEach((course) => {
-        course.sessions = course.sessions.filter((session) => {
+    this.courses = this.courses.map((level) => {
+      return level.map((course) => ({
+        ...course,
+        sessions: course.sessions.filter((session) => {
           return (
             session.dates.length &&
             (!course.options.group || !session.group || session.group == course.options.group) &&
             (!course.options.section || !session.section || session.section == course.options.section)
           );
-        });
-      });
+        }),
+      }));
     });
   }
 

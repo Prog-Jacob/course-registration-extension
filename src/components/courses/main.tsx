@@ -16,9 +16,9 @@ export const flatten = (sortedArr: Course[]) => {
     course.priority % 1000 == 0
       ? course
       : {
-        ...course,
-        priority: course.priority == sortedArr[idx + 1]?.priority ? priority : priority++,
-      },
+          ...course,
+          priority: course.priority == sortedArr[idx + 1]?.priority ? priority : priority++,
+        },
   );
 };
 

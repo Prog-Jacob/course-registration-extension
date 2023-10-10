@@ -24,12 +24,12 @@ export default async function fetchCourseParams(): Promise<[viewState: string, e
 
   const parser = new DOMParser();
   const doc = parser.parseFromString(body, 'text/html');
-  const viewState = (doc.getElementById('__VIEWSTATE') as HTMLInputElement).value;
-  const eventValidation = (doc.getElementById('__EVENTVALIDATION') as HTMLInputElement).value;
+  const viewState = (doc.getElementById('__VIEWSTATE') as HTMLInputElement)?.value;
+  const eventValidation = (doc.getElementById('__EVENTVALIDATION') as HTMLInputElement)?.value;
   const studentId = (
     doc.getElementById(
       'ctl00_cntphmaster_ucStudDataGeneralControl_StudentDtlPopup_ucStudDtlsTabsGnrlCtrl_TabHeader1_Tab_UcStudentBasicDataTabs_0_ucTabHeader_Tab_StudBasicData_View_0_txtStudId',
     ) as HTMLInputElement
-  ).value;
-  return [viewState.replace(/^"|"$/g, '').trim(), eventValidation.replace(/^"|"$/g, '').trim(), studentId.replace(/^"|"$/g, '').trim()];
+  )?.value;
+  return [viewState?.replace(/^"|"$/g, '').trim(), eventValidation?.replace(/^"|"$/g, '').trim(), studentId?.replace(/^"|"$/g, '').trim()];
 }
