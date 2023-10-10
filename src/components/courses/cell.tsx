@@ -1,5 +1,5 @@
 import { Column, Row, Table } from '@tanstack/react-table';
-import { Course } from '../../utilities/course.types';
+import { Course } from '../../types/course';
 import { useEffect, useState } from 'react';
 import React from 'react';
 

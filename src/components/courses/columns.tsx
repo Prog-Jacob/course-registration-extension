@@ -1,5 +1,5 @@
 import { createColumnHelper } from '@tanstack/react-table';
-import { Course } from '../../utilities/course.types';
+import { Course } from '../../types/course';
 import { PriorityCell } from './priority_cell';
 import { ControlCell } from './control_cell';
 import { StateCell } from './state_cell';

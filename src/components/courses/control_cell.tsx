@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGripLines } from '@fortawesome/free-solid-svg-icons';
-import { Course } from '../../utilities/course.types';
+import { Course } from '../../types/course';
 import { Row, Table } from '@tanstack/react-table';
 import { Checkbox } from '@mui/material';
 import { ChangeEvent } from 'react';

@@ -1,6 +1,6 @@
 import { faCircleExclamation, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Course } from '../../utilities/course.types';
+import { Course } from '../../types/course';
 import { hashToHexColor } from '../../modules/hash';
 import { Row, Table } from '@tanstack/react-table';
 import { RiGroup2Fill } from 'react-icons/ri';

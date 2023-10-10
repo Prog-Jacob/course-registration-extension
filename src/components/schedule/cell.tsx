@@ -1,4 +1,4 @@
-import { Course, ScheduleOptions } from '../../utilities/course.types';
+import { Course, ScheduleOptions } from '../../types/course';
 import { RefObject, useEffect, useState } from 'react';
 import { hashToHexColor } from '../../modules/hash';
 import { MouseEvent } from 'react';

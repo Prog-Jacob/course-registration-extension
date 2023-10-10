@@ -1,4 +1,4 @@
-import { Course } from '../../utilities/course.types';
+import { Course } from '../../types/course';
 
 export const defaultData: Course[] = [
   {

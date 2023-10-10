@@ -1,4 +1,4 @@
-import { Course } from '../../utilities/course.types';
+import { Course } from '../../types/course';
 import { Row, Table } from '@tanstack/react-table';
 import { MouseEvent } from 'react';
 import React from 'react';

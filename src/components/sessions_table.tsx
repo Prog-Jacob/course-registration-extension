@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Course } from '../utilities/course.types';
+import { Course } from '../types/course';
 import React from 'react';
 
 const table = [

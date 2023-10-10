@@ -1,4 +1,4 @@
-import { Course } from '../../utilities/course.types';
+import { Course } from '../../types/course';
 import { AddCourseTable } from '../add_course_table';
 import { IoIosAddCircle } from 'react-icons/io';
 import { Table } from '@tanstack/react-table';

@@ -1,5 +1,5 @@
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { Course } from '../../utilities/course.types';
+import { Course } from '../../types/course';
 import FormControl from '@mui/material/FormControl';
 import { Table } from '@tanstack/react-table';
 import MenuItem from '@mui/material/MenuItem';

@@ -1,5 +1,5 @@
 import { FormControlLabel, FormControl, FormGroup, FormLabel, Checkbox, TextField } from '@mui/material';
-import { CourseOptions, ScheduleOptions } from '../utilities/course.types';
+import { CourseOptions, ScheduleOptions } from '../types/course';
 import { Dispatch, RefObject, SetStateAction, useState } from 'react';
 import { BsFillArrowRightCircleFill } from 'react-icons/bs';
 import Slider from '@mui/material/Slider';

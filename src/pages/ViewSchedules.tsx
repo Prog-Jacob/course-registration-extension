@@ -1,8 +1,8 @@
-import { Course, ScheduleOptions } from '../utilities/course.types';
-import { Combination } from '../utilities/combination.types';
+import { Course, ScheduleOptions } from '../types/course';
+import { Combination } from '../types/combination';
 import { SessionTable } from '../components/sessions_table';
 import { Alert, Box, Button, Slider } from '@mui/material';
-import { CourseGroups } from '../utilities/course.types';
+import { CourseGroups } from '../types/course';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { IoArrowBackCircle } from 'react-icons/io5';

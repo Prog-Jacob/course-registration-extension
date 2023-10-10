@@ -2,8 +2,8 @@ import { DragDropContext, Draggable, DropResult, Droppable } from 'react-beautif
 import { flexRender, useReactTable, getCoreRowModel, Row } from '@tanstack/react-table';
 import { Dispatch, SetStateAction, useEffect, useState, RefObject } from 'react';
 import { modifyObject } from '../../modules/modify_nested_objects';
-import { CourseGroups } from '../../utilities/course.types';
-import { Course } from '../../utilities/course.types';
+import { CourseGroups } from '../../types/course';
+import { Course } from '../../types/course';
 import { hashToHex } from '../../modules/hash';
 import '../../styles/course_table.css';
 import { columns } from './columns';

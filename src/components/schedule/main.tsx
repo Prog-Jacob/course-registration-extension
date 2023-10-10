@@ -1,4 +1,4 @@
-import { Course, ScheduleOptions } from '../../utilities/course.types';
+import { Course, ScheduleOptions } from '../../types/course';
 import '../../styles/schedule.css';
 import { RefObject } from 'react';
 import { Cell } from './cell';

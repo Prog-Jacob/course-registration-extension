@@ -1,6 +1,6 @@
 import { Dispatch, RefObject, SetStateAction, useRef, useState } from 'react';
 import { Alert, Button, IconButton } from '@mui/material';
-import { Course } from '../utilities/course.types';
+import { Course } from '../types/course';
 import { createRoot } from 'react-dom/client';
 import { SlCalender } from 'react-icons/sl';
 import { flatten } from './courses/main';

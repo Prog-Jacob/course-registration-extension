@@ -1,7 +1,7 @@
-import { Combination, Schedule } from '../utilities/combination.types';
-import { Course, ScheduleOptions } from '../utilities/course.types';
+import { Combination, Schedule } from '../types/combination';
+import { Course, ScheduleOptions } from '../types/course';
 import candidateCourses from '../modules/candidate_courses';
-import { CourseGroups } from '../utilities/course.types';
+import { CourseGroups } from '../types/course';
 
 export default class Scheduler {
   // Combinations

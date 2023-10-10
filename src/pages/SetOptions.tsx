@@ -1,6 +1,6 @@
-import { Course, CourseOptions, ScheduleOptions } from '../utilities/course.types';
+import { Course, CourseOptions, ScheduleOptions } from '../types/course';
 import { FormOptions } from '../components/form_options';
-import { CourseGroups } from '../utilities/course.types';
+import { CourseGroups } from '../types/course';
 import { useEffect, useState, useRef } from 'react';
 import { Table } from '../components/courses/main';
 import { useNavigate } from 'react-router-dom';
