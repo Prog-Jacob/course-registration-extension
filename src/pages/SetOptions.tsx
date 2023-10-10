@@ -1,10 +1,10 @@
 import { Course, CourseOptions, ScheduleOptions } from '../utilities/course.types';
 import { FormOptions } from '../components/form_options';
+import { CourseGroups } from '../utilities/course.types';
 import { useEffect, useState, useRef } from 'react';
 import { Table } from '../components/courses/main';
 import { useNavigate } from 'react-router-dom';
 import { Alert } from '@mui/material';
-import { CourseGroups } from '../components/courses/types';
 import React from 'react';
 
 function SetOptions({ data }: { data: Course[] }) {

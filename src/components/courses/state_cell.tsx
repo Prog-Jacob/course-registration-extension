@@ -1,12 +1,12 @@
 import { faCircleExclamation, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Course } from '../../utilities/course.types';
-import Schedule from '../../components/schedule/main';
 import { hashToHexColor } from '../../modules/hash';
 import { Row, Table } from '@tanstack/react-table';
 import { RiGroup2Fill } from 'react-icons/ri';
 import { BsCircleFill } from 'react-icons/bs';
 import '../../styles/popup_schedule.css';
+import Schedule from '../schedule/main';
 import { Button } from '@mui/material';
 import { MouseEvent } from 'react';
 import { useState } from 'react';

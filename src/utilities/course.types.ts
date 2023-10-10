@@ -18,6 +18,10 @@ export type CourseOptions = {
   section?: number;
 };
 
+export interface CourseGroups {
+  [key: string]: string;
+}
+
 export type ScheduleOptions = {
   exclude_dates: boolean[];
   maxCredits: number;

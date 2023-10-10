@@ -1,13 +1,13 @@
 import { Course, ScheduleOptions } from '../utilities/course.types';
 import { Combination } from '../utilities/combination.types';
 import { SessionTable } from '../components/sessions_table';
+import { Alert, Box, Button, Slider } from '@mui/material';
+import { CourseGroups } from '../utilities/course.types';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { IoArrowBackCircle } from 'react-icons/io5';
 import Schedule from '../components/schedule/main';
 import Scheduler from '../services/algorithm';
-import { Alert, Box, Button, Slider } from '@mui/material';
-import { CourseGroups } from '../components/courses/types';
 import React from 'react';
 
 function ViewSchedules() {

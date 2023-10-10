@@ -2,10 +2,10 @@ import { DragDropContext, Draggable, DropResult, Droppable } from 'react-beautif
 import { flexRender, useReactTable, getCoreRowModel, Row } from '@tanstack/react-table';
 import { Dispatch, SetStateAction, useEffect, useState, RefObject } from 'react';
 import { modifyObject } from '../../modules/modify_nested_objects';
+import { CourseGroups } from '../../utilities/course.types';
 import { Course } from '../../utilities/course.types';
 import { hashToHex } from '../../modules/hash';
 import '../../styles/course_table.css';
-import { CourseGroups } from './types';
 import { columns } from './columns';
 import React from 'react';
 
@@ -16,9 +16,9 @@ export const flatten = (sortedArr: Course[]) => {
     course.priority % 1000 == 0
       ? course
       : {
-          ...course,
-          priority: course.priority == sortedArr[idx + 1]?.priority ? priority : priority++,
-        },
+        ...course,
+        priority: course.priority == sortedArr[idx + 1]?.priority ? priority : priority++,
+      },
   );
 };
 

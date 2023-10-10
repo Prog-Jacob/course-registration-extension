@@ -1,22 +1,28 @@
 import { Combination, Schedule } from '../utilities/combination.types';
 import { Course, ScheduleOptions } from '../utilities/course.types';
 import candidateCourses from '../modules/candidate_courses';
-import { CourseGroups } from '../components/courses/types';
+import { CourseGroups } from '../utilities/course.types';
 
 export default class Scheduler {
+  // Combinations
   private validCombinations: Combination[][];
   private candidateCombinations: number[][];
-  private baseSchedules: Schedule[];
-  private courses: Course[][];
+  private increment: number;
+  private rangePtr: number;
+  private slidePtr: number;
 
+  // Courses
   private mustIncludeCost: number;
-  private visitedGroups: { [key: string]: boolean };
-  public increment: number;
-  public rangePtr: number;
-  public slidePtr: number;
-  private groups: CourseGroups;
+  private courses: Course[][];
   private min: number;
   private max: number;
+
+  // Schedules
+  private baseSchedules: Schedule[];
+
+  // Groups
+  private visitedGroups: { [key: string]: boolean };
+  private groups: CourseGroups;
 
   constructor(courses: Course[][], options: ScheduleOptions, groups: CourseGroups) {
     this.baseSchedules = [{ sessions: [], dates: options.exclude_dates }];

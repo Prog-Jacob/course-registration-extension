@@ -1,4 +1,7 @@
 export default async function fetchCourses(viewState: string, eventValidation: string, studentId: string) {
+  viewState = encodeURIComponent(viewState);
+  studentId = encodeURIComponent(studentId);
+  eventValidation = encodeURIComponent(eventValidation);
   const response = await fetch('https://sis.ejust.edu.eg/UI/StudentViewAdmin/STD_CRS_REG_PLN_Grouping.aspx', {
     headers: {
       accept: '*/*',

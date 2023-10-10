@@ -28,12 +28,13 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "set INLINE_RUNTIME_CHUNK=false && craco build",
+    "start": "craco start",
+    "build": "craco build",
+    "lint": "eslint ./src/",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "format": "prettier --config .prettierrc \"**/*.{css,json,ts,js,tsx,jsx,yaml}\" --write",
-    "lint": "eslint ./src/"
+    "publish": "zip -r download.zip build",
+    "format": "prettier --config .prettierrc \"**/*.{css,json,ts,js,tsx,jsx,yaml}\" --write"
   },
   "browserslist": {
     "production": [
