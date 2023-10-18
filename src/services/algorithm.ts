@@ -2,6 +2,7 @@ import { Combination, Schedule } from '../types/combination';
 import { Course, ScheduleOptions } from '../types/course';
 import candidateCourses from '../modules/candidate_courses';
 import { CourseGroups } from '../types/course';
+import { Trie } from './prefix_tree';
 
 export default class Scheduler {
   // Combinations
@@ -19,6 +20,7 @@ export default class Scheduler {
 
   // Schedules
   private baseSchedules: Schedule[];
+  private conflicts: Trie;
 
   // Groups
   private visitedGroups: { [key: string]: boolean };
@@ -29,6 +31,7 @@ export default class Scheduler {
     this.min = options.minCredits;
     this.max = options.maxCredits;
     this.courses = [...courses];
+    this.conflicts = new Trie();
     this.mustIncludeCost = 0;
     this.visitedGroups = {};
     this.groups = groups;
@@ -163,11 +166,14 @@ export default class Scheduler {
   private generateCombinations(mask: number): Combination {
     const ans: Combination = { courses: mask, schedules: this.baseSchedules.slice() };
     const visitedGroups = { ...this.visitedGroups };
+    const copyMask = mask;
     let i = 0;
+
+    if (this.conflicts.inverseStartsWIth(mask.toString(2).split('').reverse().join(''))) return { ...ans, schedules: [] };
 
     while (mask) {
       if ((mask & 1) == 0) {
-        i++;
+        ++i;
         mask >>= 1;
         continue;
       }
@@ -177,7 +183,10 @@ export default class Scheduler {
         const nextSchedules: Schedule[] = [];
         const group = this.groups[course.code];
 
-        if (n == 0 || visitedGroups[group]) return { ...ans, schedules: [] };
+        if (n == 0 || visitedGroups[group]) {
+          this.conflicts.insert((copyMask & ((1 << ++i) - 1)).toString(2).split('').reverse().join(''));
+          return { ...ans, schedules: [] };
+        }
         if (group) visitedGroups[group] = true;
 
         for (let j = 0; j < n; j++) {
@@ -190,11 +199,16 @@ export default class Scheduler {
             nextSchedules.push({ sessions: [...schedule.sessions, j], dates: newDates });
           }
         }
+
+        if (!nextSchedules.length) {
+          this.conflicts.insert((copyMask & ((1 << ++i) - 1)).toString(2).split('').reverse().join(''));
+          return { ...ans, schedules: [] };
+        }
         ans.schedules = nextSchedules;
       }
 
       mask >>= 1;
-      i++;
+      ++i;
     }
 
     if (this.courses[0][0].priority == 0) {

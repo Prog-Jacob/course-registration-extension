@@ -3,6 +3,7 @@ module.exports = {
     configure: (webpackConfig, { env, paths }) => {
       return {
         ...webpackConfig,
+        devtool: false,
         mode: env,
         entry: {
           main: [paths.appIndexJs].filter(Boolean),

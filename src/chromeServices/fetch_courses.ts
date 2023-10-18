@@ -1,13 +1,10 @@
+import { parseCourses } from './parse_courses';
 import { Course } from '../types/course';
-import { defaultData } from '../components/courses/data';
 
 export default async function fetchCourses(viewState: string, eventValidation: string, studentId: string): Promise<Course[]> {
-  const parser = new DOMParser();
   const body = await fetchCoursesBody(viewState, eventValidation, studentId);
-  const doc = parser.parseFromString(body, 'text/html');
-  // Parse courses from the document.
-  // const courses: Course[] = [];
-  return defaultData.map((course, index) => ({ ...course, priority: index + 1 }));
+  const courses = await parseCourses(body, studentId);
+  return courses.map((course, index) => ({ ...course, priority: index + 1 }));
 }
 
 export async function fetchCoursesBody(viewState: string, eventValidation: string, studentId: string): Promise<string> {

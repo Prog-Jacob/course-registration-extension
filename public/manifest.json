@@ -19,5 +19,10 @@
       "matches": ["*://sis.ejust.edu.eg/*"],
       "js": ["./static/js/content.js"]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{ce4dd9b9-cf55-4865-bf73-4c44dac9c2da}"
+    }
+  }
 }
