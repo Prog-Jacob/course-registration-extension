@@ -28,8 +28,8 @@ export default function parseSessions(body: string): Session[] {
   Object.values(rows).forEach((row) => {
     const check = row.querySelector(`[id$="_cbSelectGroup"]`) as HTMLInputElement;
     if (check) {
-      isDisabled = check.disabled;
       AddSessions();
+      isDisabled = check.disabled;
     }
 
     const day = clean(row.querySelector(`[id$="_lblDays"]`).innerHTML).toLocaleLowerCase();

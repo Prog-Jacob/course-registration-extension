@@ -18,7 +18,7 @@ export const columns = [
   columnHelper.accessor('code', {
     cell: TableCell,
     header: 'Course Code',
-    meta: { type: 'text' },
+    meta: { type: 'text', tooltip: true },
   }),
   columnHelper.accessor('credits', {
     cell: TableCell,

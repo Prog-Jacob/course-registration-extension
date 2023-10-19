@@ -1,6 +1,7 @@
 import { Column, Row, Table } from '@tanstack/react-table';
 import { Course } from '../../types/course';
 import { useEffect, useState } from 'react';
+import '../../styles/tooltip.css';
 import React from 'react';
 
 export const TableCell = ({
@@ -35,6 +36,6 @@ export const TableCell = ({
       onChange={(e) => setValue(((value = e.target.value) => (+value > 0 ? +value : undefined))())}
     />
   ) : (
-    <span>{value || undefined}</span>
+    <span {...(columnMeta?.tooltip ? { className: 'tooltip', 'data-text': row.original.name } : {})}>{value || undefined}</span>
   );
 };

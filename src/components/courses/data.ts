@@ -15,6 +15,7 @@ export const defaultData: Course[] = [
         dates: [1, 3, 10, 12],
         section: 1,
         group: 2,
+        isDisabled: true,
       },
       {
         dates: [2, 5],

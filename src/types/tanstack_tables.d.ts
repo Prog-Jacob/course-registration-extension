@@ -12,6 +12,7 @@ declare module '@tanstack/react-table' {
 
   interface ColumnMeta<TData extends RowData, TValue> {
     editable?: boolean;
+    tooltip?: boolean;
     type: 'text' | 'number';
   }
 }

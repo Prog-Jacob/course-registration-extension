@@ -48,14 +48,15 @@ function ViewSchedules() {
   const getSolution = () => {
     setSolution(undefined);
     setSolution(() => {
-      try {
-        if (typeof schedules.current != 'string') {
+      if (typeof schedules.current != 'string') {
+        try {
           unpackSolution(schedules.current.getCombinations());
           return schedules.current.getCombinations();
+        } catch (e: unknown) {
+          return (e as Error).message;
         }
-      } catch (e: unknown) {
-        return (e as Error).message;
       }
+      return schedules.current;
     });
   };
 

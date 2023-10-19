@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Course } from '../types/course';
+import '../styles/tooltip.css';
 import React from 'react';
 
 const table = [
@@ -32,7 +33,9 @@ export const SessionTable = ({ courses }: { courses: Course[] }) => {
             return (
               <tr key={`${idx}`}>
                 {table.map(([_, id]) => (
-                  <td key={`${idx}_${id}`}>{id.split('.').reduce((obj, key) => obj[+key >= 0 ? +key : key], course) ?? ''}</td>
+                  <td key={`${idx}_${id}`} {...(id == 'code' ? { className: 'tooltip', 'data-text': course.name } : {})}>
+                    {id.split('.').reduce((obj, key) => obj[+key >= 0 ? +key : key], course) ?? ''}
+                  </td>
                 ))}
               </tr>
             );
