@@ -20,6 +20,7 @@ export default class Scheduler {
 
   // Schedules
   private baseSchedules: Schedule[];
+  private considerDisabled: boolean;
   private conflicts: Trie;
 
   // Groups
@@ -28,6 +29,7 @@ export default class Scheduler {
 
   constructor(courses: Course[][], options: ScheduleOptions, groups: CourseGroups) {
     this.baseSchedules = [{ sessions: [], dates: options.exclude_dates }];
+    this.considerDisabled = options.considerDisabled;
     this.min = options.minCredits;
     this.max = options.maxCredits;
     this.courses = [...courses];
@@ -130,6 +132,7 @@ export default class Scheduler {
         sessions: course.sessions.filter((session) => {
           return (
             session.dates.length &&
+            (this.considerDisabled || !session.isDisabled) &&
             (!course.options.group || !session.group || session.group == course.options.group) &&
             (!course.options.section || !session.section || session.section == course.options.section)
           );

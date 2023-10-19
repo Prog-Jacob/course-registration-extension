@@ -11,6 +11,7 @@ export type Session = {
   group?: number;
   section?: number;
   dates: number[];
+  isDisabled?: boolean;
 };
 
 export type CourseOptions = {
@@ -27,4 +28,5 @@ export type ScheduleOptions = {
   maxCredits: number;
   minCredits: number;
   preferMin?: boolean;
+  considerDisabled?: boolean;
 };

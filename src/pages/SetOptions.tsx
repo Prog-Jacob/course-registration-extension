@@ -32,7 +32,7 @@ function SetOptions() {
   };
   const [courseOptions, setCourseOptions] = useState<CourseOptions>(retrievedCourseOptions ?? {});
   const [originalData, setOriginalData] = useState<Course[]>(courses);
-  const scheduleOptions = useRef<ScheduleOptions>(options);
+  const scheduleOptions = useRef<ScheduleOptions>({ ...options, preferMin: false, considerDisabled: false });
   const groupsRef = useRef<CourseGroups>(groups ?? {});
   const navigate = useNavigate();
 

@@ -31,7 +31,6 @@ export default function parseSessions(body: string): Session[] {
       isDisabled = check.disabled;
       AddSessions();
     }
-    if (isDisabled) return;
 
     const day = clean(row.querySelector(`[id$="_lblDays"]`).innerHTML).toLocaleLowerCase();
     const from = new Date(today + clean(row.querySelector(`[id$="_lblFrom"]`).innerHTML));
@@ -64,10 +63,11 @@ export default function parseSessions(body: string): Session[] {
       const groupsArr = Array.from(groups);
 
       for (let gr = 0; gr < Math.max(1, groupsArr.length); gr++) {
-        const session = {
+        const session: Session = {
           group: groupsArr[gr],
           section: sectionsArr[sec],
           dates: Array.from(sessionDates),
+          isDisabled: isDisabled,
         };
         sessions[JSON.stringify(session)] = session;
       }

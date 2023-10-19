@@ -21,7 +21,6 @@ export function FormOptions({
 }) {
   const options = scheduleOptions.current;
   const [showSchedule, setShowSchedule] = useState(false);
-  const [checked, setChecked] = useState(!!options?.preferMin);
   const [creditRange, setCreditRange] = useState([options?.minCredits ?? 14, options?.maxCredits ?? 20]);
 
   const toggleSchedule = (e: MouseEvent<HTMLButtonElement>) => {
@@ -37,9 +36,12 @@ export function FormOptions({
     setCreditRange(newValue);
   };
 
-  const handleCheckbox = () => {
-    setChecked(!checked);
-    options!.preferMin = !checked;
+  const handlePreferMin = (e) => {
+    options!.preferMin = e.target.checked;
+  };
+
+  const handleConsiderDisabled = (e) => {
+    options!.considerDisabled = e.target.checked;
   };
 
   return (
@@ -105,13 +107,13 @@ export function FormOptions({
         />
         <FormControlLabel
           className='form-option'
-          control={
-            <Checkbox
-              checked={checked}
-              onChange={handleCheckbox}
-              sx={{ '& .MuiSvgIcon-root': { fontSize: 18, fill: 'var(--secondary)' } }}
-            />
-          }
+          control={<Checkbox onChange={handleConsiderDisabled} sx={{ '& .MuiSvgIcon-root': { fontSize: 18, fill: 'var(--secondary)' } }} />}
+          label='Consider disabled sessions (full/conflict):'
+          labelPlacement='start'
+        />
+        <FormControlLabel
+          className='form-option'
+          control={<Checkbox onChange={handlePreferMin} sx={{ '& .MuiSvgIcon-root': { fontSize: 18, fill: 'var(--secondary)' } }} />}
           label='Get a light schedule:'
           labelPlacement='start'
         />
