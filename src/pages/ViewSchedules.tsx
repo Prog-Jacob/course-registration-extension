@@ -1,12 +1,14 @@
-import { Alert, Box, Button, CircularProgress, Slider, Stack } from '@mui/material';
 import { SessionTable } from '../components/sessions_table';
+import { Alert, Box, Button, Slider } from '@mui/material';
 import { Course, ScheduleOptions } from '../types/course';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { IoArrowBackCircle } from 'react-icons/io5';
 import Schedule from '../components/schedule/main';
 import { Combination } from '../types/combination';
+import { useReactToPrint } from 'react-to-print';
 import { CourseGroups } from '../types/course';
+import { AiFillPrinter } from 'react-icons/ai';
 import Scheduler from '../services/algorithm';
 import React from 'react';
 
@@ -39,6 +41,7 @@ function ViewSchedules() {
     })(),
   );
   const validSchedules = useRef<Course[][]>();
+  const componentRef = useRef();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -97,6 +100,12 @@ function ViewSchedules() {
       },
     });
   };
+
+  const handlePrint = useReactToPrint({
+    onPrintError: (error) => console.log(error),
+    content: () => componentRef.current,
+    removeAfterPrint: true,
+  });
 
   return (
     <>
@@ -182,23 +191,33 @@ function ViewSchedules() {
                 </Alert>
               ) : (
                 <>
-                  {validSchedules.current?.map((courses, idx) => (
-                    <div key={idx} style={{ margin: '1rem 0' }}>
-                      <Schedule
-                        key={`schedule_${idx}`}
-                        courses={courses.map((course) => ({
-                          name: course.code,
-                          dates: (() => {
-                            const ans = new Array(40).fill(false);
-                            course.sessions[0].dates.forEach((date) => (ans[date] = true));
-                            return ans;
-                          })(),
-                        }))}
-                      />
-                      <br />
-                      <SessionTable key={`table_${idx}`} courses={courses} />
-                    </div>
-                  ))}
+                  <Button
+                    sx={{ backgroundColor: 'red', float: 'right', marginBottom: '10px' }}
+                    endIcon={<AiFillPrinter />}
+                    onClick={handlePrint}
+                    variant='contained'
+                  >
+                    Print
+                  </Button>
+                  <div ref={componentRef}>
+                    {validSchedules.current?.map((courses, idx) => (
+                      <div key={idx} style={{ margin: '1rem 0' }}>
+                        <Schedule
+                          key={`schedule_${idx}`}
+                          courses={courses.map((course) => ({
+                            name: course.code,
+                            dates: (() => {
+                              const ans = new Array(40).fill(false);
+                              course.sessions[0].dates.forEach((date) => (ans[date] = true));
+                              return ans;
+                            })(),
+                          }))}
+                        />
+                        <br />
+                        <SessionTable key={`table_${idx}`} courses={courses} />
+                      </div>
+                    ))}
+                  </div>
                 </>
               )}
             </>

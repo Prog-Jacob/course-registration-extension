@@ -20,10 +20,6 @@ const Footer = () => {
       name: <FaEnvelope />,
       link: 'mailto:Ahmed.Abdelaziz.GM@google.com',
     },
-    {
-      name: <FaPhone />,
-      link: 'tel:+201016538863',
-    },
   ];
   return (
     <AppBar position='static' sx={{ marginTop: '1rem', backgroundColor: 'var(--secondary)' }}>

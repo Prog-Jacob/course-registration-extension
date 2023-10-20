@@ -5,7 +5,7 @@ import { Cell } from './cell';
 import React from 'react';
 
 const days: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
-const timeSlots: string[] = ['09:00', '09:50', '10:50', '11:40', '12:40', '01:30', '02:20', '03:10'];
+const timeSlots: string[] = ['09:00', '09:45', '10:45', '11:30', '12:30', '01:15', '02:15', '03:00'];
 
 const Schedule = ({
   courses,

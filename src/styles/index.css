@@ -54,3 +54,12 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+@media print {
+  html,
+  body {
+    height: 100% !important;
+    overflow: visible !important;
+    margin: auto !important;
+  }
+}
