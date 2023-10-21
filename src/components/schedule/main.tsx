@@ -4,6 +4,7 @@ import { RefObject } from 'react';
 import { Cell } from './cell';
 import React from 'react';
 
+const seed = '&g![a8#>p'.toUpperCase();
 const days: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
 const timeSlots: string[] = ['09:00', '09:45', '10:45', '11:30', '12:30', '01:15', '02:15', '03:00'];
 
@@ -19,7 +20,7 @@ const Schedule = ({
   idx?: number;
 }) => {
   const toggler = !courses;
-  const schedule = days.map(() => new Array(timeSlots.length).fill(''));
+  const schedule: string[][] = days.map(() => new Array(timeSlots.length).fill(''));
 
   if (!toggler) {
     for (const course of courses!) {
@@ -53,11 +54,12 @@ const Schedule = ({
                   else {
                     let temp: number;
                     [temp, span] = [span, 1];
+
                     return (
                       <Cell
                         key={`${i}-${j}`}
                         toggler={toggler ? i * 8 + j : undefined}
-                        name={slot}
+                        name={slot.startsWith(seed) ? slot.split(' ')[1] : slot}
                         colSpan={temp}
                         options={options}
                         courseOptions={courseOptions}

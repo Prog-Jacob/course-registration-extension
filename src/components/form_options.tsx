@@ -108,7 +108,7 @@ export function FormOptions({
         <FormControlLabel
           className='form-option'
           control={<Checkbox onChange={handleConsiderDisabled} sx={{ '& .MuiSvgIcon-root': { fontSize: 18, fill: 'var(--secondary)' } }} />}
-          label='Consider disabled sessions (full/conflict):'
+          label='Consider Full Sessions:'
           labelPlacement='start'
         />
         <FormControlLabel

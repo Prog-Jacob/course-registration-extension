@@ -24,13 +24,18 @@ export default function parseSessions(body: string): Session[] {
   const groups: Set<number> = new Set();
   const sessions: Object = {};
   let isDisabled = false;
+  let sessionState = '';
 
   Object.values(rows).forEach((row) => {
     const check = row.querySelector(`[id$="_cbSelectGroup"]`) as HTMLInputElement;
+    const status = clean(row.querySelector(`[id$="_lblSecStatus"]`).innerHTML).toLowerCase();
+
     if (check) {
       AddSessions();
+      sessionState = status;
       isDisabled = check.disabled;
     }
+    if (isDisabled && sessionState == 'schedule conflict') return;
 
     const day = clean(row.querySelector(`[id$="_lblDays"]`).innerHTML).toLocaleLowerCase();
     const from = new Date(today + clean(row.querySelector(`[id$="_lblFrom"]`).innerHTML));

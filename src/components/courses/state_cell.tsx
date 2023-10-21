@@ -14,6 +14,7 @@ import React from 'react';
 
 export const StateCell = ({ table, row }: { table: Table<Course>; row: Row<Course> }) => {
   return (() => {
+    const seed = '&g![a8#>p';
     const meta = table.options.meta;
     const curr = row.original.priority;
     const rows = table.getRowModel().rows;
@@ -34,14 +35,14 @@ export const StateCell = ({ table, row }: { table: Table<Course>; row: Row<Cours
             X
           </button>
           <Schedule
-            courses={(row.original as Course).sessions.map((session) => {
+            courses={(row.original as Course).sessions.map((session, idx) => {
               return {
-                name: (() => {
+                name: `${seed}${idx} ${(() => {
                   if (session.group && session.section) return `G${session.group} S${session.section}`;
                   if (!(session.group || session.section)) return 'NA';
                   if (session.group) return `G${session.group}`;
                   return `S${session.section}`;
-                })(),
+                })()}`,
                 dates: (() => {
                   const ans = new Array(40).fill(false);
                   session.dates.forEach((date) => (ans[date] = true));
