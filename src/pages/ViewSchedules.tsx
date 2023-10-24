@@ -103,7 +103,7 @@ function ViewSchedules() {
 
   const handlePrint = useReactToPrint({
     onPrintError: (error) => console.log(error),
-    content: () => componentRef.current,
+    content: () => componentRef.current ?? null,
     removeAfterPrint: true,
   });
 

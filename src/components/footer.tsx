@@ -1,4 +1,4 @@
-import { FaGithub, FaLinkedin, FaChess, FaEnvelope, FaPhone } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaChess, FaEnvelope } from 'react-icons/fa';
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import React from 'react';
 

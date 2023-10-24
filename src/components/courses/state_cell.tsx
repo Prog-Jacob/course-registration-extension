@@ -38,10 +38,10 @@ export const StateCell = ({ table, row }: { table: Table<Course>; row: Row<Cours
             courses={(row.original as Course).sessions.map((session, idx) => {
               return {
                 name: `${seed}${idx} ${(() => {
-                  if (session.group && session.section) return `G${session.group} S${session.section}`;
-                  if (!(session.group || session.section)) return 'NA';
-                  if (session.group) return `G${session.group}`;
-                  return `S${session.section}`;
+                  if (session.group?.length && session.section?.length) return `G${session.group.join('&')} S${session.section.join('&')}`;
+                  if (!(session.group?.length || session.section?.length)) return 'NA';
+                  if (session.group?.length) return `G${session.group.join('&')}`;
+                  return `S${session.section!.join('&')}`;
                 })()}`,
                 dates: (() => {
                   const ans = new Array(40).fill(false);

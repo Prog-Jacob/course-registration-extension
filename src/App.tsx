@@ -1,5 +1,4 @@
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
-import { defaultData } from './components/courses/data';
 import ViewSchedules from './pages/ViewSchedules';
 import SetOptions from './pages/SetOptions';
 import Header from './components/header';

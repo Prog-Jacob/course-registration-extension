@@ -13,7 +13,7 @@ function Home() {
         const tab = tabs[0];
         const url = tab.url;
 
-        if (url.includes('sis.ejust.edu.eg')) {
+        if (url?.includes('sis.ejust.edu.eg')) {
           setResponse(undefined);
           chrome.tabs.sendMessage(tab.id, { type: 'GET_Courses' }, (response: DOMResponse) => {
             setResponse(response);

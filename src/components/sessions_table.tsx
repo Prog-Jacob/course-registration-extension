@@ -8,6 +8,7 @@ const table = [
   ['Credits', 'credits'],
   ['Group', 'sessions.0.group'],
   ['Section', 'sessions.0.section'],
+  ['Notes', 'sessions.0.sectionNotes'],
 ];
 
 export const SessionTable = ({ courses }: { courses: Course[] }) => {
@@ -32,9 +33,12 @@ export const SessionTable = ({ courses }: { courses: Course[] }) => {
             creditsSum.current += course.credits;
             return (
               <tr key={`${idx}`}>
-                {table.map(([_, id]) => (
+                {table.map(([header, id]) => (
                   <td key={`${idx}_${id}`} {...(id == 'code' ? { className: 'tooltip', 'data-text': course.name } : {})}>
-                    {id.split('.').reduce((obj, key) => obj[+key >= 0 ? +key : key], course) ?? ''}
+                    {(() => {
+                      const component = id.split('.').reduce((obj, key) => obj[+key >= 0 ? +key : key], course) ?? '';
+                      return header == 'Group' || header == 'Section' ? (component || []).join('&') : component;
+                    })()}
                   </td>
                 ))}
               </tr>

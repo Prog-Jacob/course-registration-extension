@@ -1,6 +1,6 @@
 import { FormControlLabel, FormControl, FormGroup, FormLabel, Checkbox, TextField } from '@mui/material';
 import { CourseOptions, ScheduleOptions } from '../types/course';
-import { Dispatch, RefObject, SetStateAction, useState } from 'react';
+import { ChangeEvent, Dispatch, RefObject, SetStateAction, useState } from 'react';
 import { BsFillArrowRightCircleFill } from 'react-icons/bs';
 import Slider from '@mui/material/Slider';
 import Schedule from './schedule/main';
@@ -36,11 +36,11 @@ export function FormOptions({
     setCreditRange(newValue);
   };
 
-  const handlePreferMin = (e) => {
+  const handlePreferMin = (e: ChangeEvent<HTMLInputElement>) => {
     options!.preferMin = e.target.checked;
   };
 
-  const handleConsiderDisabled = (e) => {
+  const handleConsiderDisabled = (e: ChangeEvent<HTMLInputElement>) => {
     options!.considerDisabled = e.target.checked;
   };
 

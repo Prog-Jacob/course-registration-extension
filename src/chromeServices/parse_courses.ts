@@ -11,13 +11,9 @@ export async function parseCourses(body: string, studentId: string): Promise<Cou
   const doc = parser.parseFromString(body, 'text/html');
   const table = doc.getElementById('ctl00_cntphmaster_grdData');
   const rows = Object.values(table.querySelectorAll('.table_Row, .table_AlternatingRow'));
-  let rest = Object.values(doc.querySelectorAll(`[id$="hdnENTCDEPKGTYPEID"]`)).reduce(
+  const rest: unknown = Object.values(doc.querySelectorAll(`[id$="hdnENTCDEPKGTYPEID"], [name$="txtNote"]`)).reduce(
     (acc, elem: HTMLInputElement) => `${acc}${encodeURIComponent(elem.name)}=${encodeURIComponent(elem.value)}&`,
     '',
-  );
-  rest = Object.values(doc.querySelectorAll(`[name$="txtNote"]`)).reduce(
-    (acc, elem: HTMLInputElement) => `${acc}${encodeURIComponent(elem.name)}=${encodeURIComponent(elem.value)}&`,
-    rest,
   );
 
   for (let i = 0; i < rows.length; i++) {
@@ -25,7 +21,7 @@ export async function parseCourses(body: string, studentId: string): Promise<Cou
     const name = (rows[i].querySelector(`[id$="_cbSelect"]`) as HTMLInputElement).name;
 
     try {
-      const sessions = await fetchSessions(name, viewState, eventValidation, studentId, rest);
+      const sessions = await fetchSessions(name, viewState, eventValidation, studentId, rest as string);
       courses.push({
         code: clean(cells[0].innerHTML),
         name: clean(cells[1].innerHTML),

@@ -8,10 +8,11 @@ export type Course = {
 };
 
 export type Session = {
-  group?: number;
-  section?: number;
   dates: number[];
+  group?: number[];
+  section?: number[];
   isDisabled?: boolean;
+  sectionNotes?: string;
 };
 
 export type CourseOptions = {

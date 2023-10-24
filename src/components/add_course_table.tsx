@@ -38,7 +38,11 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
     const idx = rowIdx.current;
     const row = tableElement.insertRow(-1);
     row.setAttribute('key', 'row_' + idx);
-    course.current.sessions[idx] = { dates: [] };
+    course.current.sessions[idx] = {
+      dates: [],
+      group: [],
+      section: [],
+    };
     createRoot(row).render(<CreateRow rowIdx={idx} course={course} />);
     ++rowIdx.current;
   };
@@ -87,7 +91,7 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
                 type={'number'}
                 onChange={(e) => {
                   const value = e.target.value;
-                  course.current!.sessions[rowIdx][id] = +value > 0 ? +value : undefined;
+                  if (+value > 0) course.current!.sessions[rowIdx][id].push(+value);
                 }}
               />
             ) : (

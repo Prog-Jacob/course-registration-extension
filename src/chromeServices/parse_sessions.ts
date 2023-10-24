@@ -1,7 +1,7 @@
 import { clean } from '../modules/DOM';
 import { Session } from '../types/course';
 
-const days = { su: 0, mo: 1, tu: 2, we: 3, th: 4 };
+const days: { [key: string]: number } = { su: 0, mo: 1, tu: 2, we: 3, th: 4 };
 const today = '2023-10-17 ';
 const dates = [
   new Date(today + '09:45 AM'),
@@ -18,17 +18,20 @@ export default function parseSessions(body: string): Session[] {
   const parser = new DOMParser();
   const doc = parser.parseFromString(body, 'text/html');
   const table = doc.getElementById('ctl00_cntphmaster_ucRegisterAddReplaceCourseDirect_grdCourseSections');
-  const rows = table.querySelectorAll('.table_Row, .table_AlternatingRow');
+  const rows = table?.querySelectorAll('.table_Row, .table_AlternatingRow');
   const sessionDates: Set<number> = new Set();
   const sections: Set<number> = new Set();
   const groups: Set<number> = new Set();
-  const sessions: Object = {};
+  const sessions: Session[] = [];
+  if (!rows) return [];
+
   let isDisabled = false;
   let sessionState = '';
+  let sectionNotes = '';
 
   Object.values(rows).forEach((row) => {
     const check = row.querySelector(`[id$="_cbSelectGroup"]`) as HTMLInputElement;
-    const status = clean(row.querySelector(`[id$="_lblSecStatus"]`).innerHTML).toLowerCase();
+    const status = clean(row.querySelector(`[id$="_lblSecStatus"]`)?.innerHTML ?? '').toLowerCase();
 
     if (check) {
       AddSessions();
@@ -36,11 +39,20 @@ export default function parseSessions(body: string): Session[] {
       isDisabled = check.disabled;
     }
     if (isDisabled && sessionState == 'schedule conflict') return;
+    // Following code should be parsing student's faculty instead.
+    const course = clean(row.querySelector(`[id$="_lblCourseCode"]`)?.innerHTML ?? '!!!')
+      .slice(0, 3)
+      .toUpperCase();
+    const day = clean(row.querySelector(`[id$="_lblDays"]`)?.innerHTML ?? '').toLocaleLowerCase();
+    const from = new Date(today + clean(row.querySelector(`[id$="_lblFrom"]`)?.innerHTML ?? ''));
+    const to = new Date(today + clean(row.querySelector(`[id$="_lblTo"]`)?.innerHTML ?? ''));
+    const section = clean(row.querySelector(`[id$="_lblSection"]`)?.innerHTML ?? '');
+    const notesRegex = new RegExp(`SEC|GROUP|TUT|LAB|${course}`);
 
-    const day = clean(row.querySelector(`[id$="_lblDays"]`).innerHTML).toLocaleLowerCase();
-    const from = new Date(today + clean(row.querySelector(`[id$="_lblFrom"]`).innerHTML));
-    const to = new Date(today + clean(row.querySelector(`[id$="_lblTo"]`).innerHTML));
-    const section = clean(row.querySelector(`[id$="_lblSection"]`).innerHTML);
+    sectionNotes = Array.from(section.matchAll(/[A-Z]{3,}/g))
+      .map((elem) => elem[0])
+      .filter((elem) => !notesRegex.test(elem))
+      .join('-');
 
     Array.from(day.matchAll(/[a-z]{2}/gi)).forEach((d) => {
       dates.forEach((date, idx) => {
@@ -63,23 +75,19 @@ export default function parseSessions(body: string): Session[] {
   function AddSessions() {
     if (!sessionDates.size) return;
     const sectionsArr = Array.from(sections);
+    const groupsArr = Array.from(groups);
 
-    for (let sec = 0; sec < Math.max(1, sectionsArr.length); sec++) {
-      const groupsArr = Array.from(groups);
+    const session: Session = {
+      section: sectionsArr.sort((a, b) => a - b),
+      group: groupsArr.sort((a, b) => a - b),
+      dates: Array.from(sessionDates),
+      sectionNotes: sectionNotes,
+      isDisabled: isDisabled,
+    };
 
-      for (let gr = 0; gr < Math.max(1, groupsArr.length); gr++) {
-        const session: Session = {
-          group: groupsArr[gr],
-          section: sectionsArr[sec],
-          dates: Array.from(sessionDates),
-          isDisabled: isDisabled,
-        };
-        sessions[JSON.stringify(session)] = session;
-      }
-    }
-
-    groups.clear();
-    sections.clear();
+    sessions.push(session);
     sessionDates.clear();
+    sections.clear();
+    groups.clear();
   }
 }
