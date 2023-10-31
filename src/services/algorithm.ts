@@ -59,9 +59,7 @@ export default class Scheduler {
       if (this.min == 0) this.validCombinations[this.mustIncludeCost].push(mustIncludeCombination);
     }
 
-    this.candidateCombinations = new Array(this.max - this.min + 1).fill(0).map((_, idx) => {
-      return candidateCourses(courseValue, this.min + idx);
-    });
+    this.candidateCombinations = candidateCourses(courseValue, this.min, this.max);
     this.rangePtr = options.preferMin ? this.min : this.max;
     this.increment = options.preferMin ? 1 : -1;
     this.slidePtr = 0;
