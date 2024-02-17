@@ -6,8 +6,8 @@ async function handleAsyncResponse(msg: DOMMessage): Promise<DOMResponse> {
   return msg.type === 'GET_Courses'
     ? await GET_Courses()
     : msg.courses && msg.type === 'POST_Courses'
-    ? await POST_Courses(msg.courses)
-    : ['98'];
+      ? await POST_Courses(msg.courses)
+      : ['98'];
 }
 
 function messagesFromReactAppListener(

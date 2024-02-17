@@ -1,4 +1,4 @@
-import { Dispatch, RefObject, SetStateAction, useRef, useState } from 'react';
+import { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Alert, Button, IconButton } from '@mui/material';
 import { Course } from '../types/course';
 import { createRoot } from 'react-dom/client';
@@ -24,27 +24,38 @@ const nestedTable = (idx: number): [string, number, string][] => [
 
 export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<Course[]>> }) => {
   const rowIdx = useRef<number>(0);
-  const course = useRef<Course>({
-    name: '',
-    code: '',
-    credits: 0,
-    priority: 999,
-    sessions: [],
-    options: {},
-  });
+  const [course, setCourse] = useState(
+    useRef<Course>({
+      name: '',
+      code: '',
+      credits: 0,
+      priority: 999,
+      sessions: [],
+      options: {},
+    }),
+  );
+  const [courseId, setCourseId] = useState('');
 
   const insertSession = () => {
     const tableElement = document.getElementById('add-course-table') as HTMLTableElement;
     const idx = rowIdx.current;
     const row = tableElement.insertRow(-1);
     row.setAttribute('key', 'row_' + idx);
-    course.current.sessions[idx] = {
+    course.current.sessions[idx] = course.current.sessions[idx] ?? {
       dates: [],
       group: [],
       section: [],
     };
-    createRoot(row).render(<CreateRow rowIdx={idx} course={course} />);
+    createRoot(row).render(<CreateRow rowIdx={idx} course={course} setCourse={setCourse} />);
     ++rowIdx.current;
+  };
+
+  const clearSessions = () => {
+    const tableElement = document.getElementById('add-course-table') as HTMLTableElement;
+    while (rowIdx.current > 0) {
+      tableElement.deleteRow(-1);
+      --rowIdx.current;
+    }
   };
 
   const submitCourse = () => {
@@ -52,9 +63,11 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
     copyCourse.sessions.forEach((session) => {
       session.dates = session.dates.filter((date) => date != undefined);
     });
-    copyCourse.sessions = copyCourse.sessions.filter((session) => session.dates.length > 0);
+    copyCourse.sessions = copyCourse.sessions.filter(
+      (session) => session.section.length > 0 || session.group.length > 0 || session.dates.length > 0,
+    );
     if (copyCourse.code && copyCourse.name && copyCourse.credits && copyCourse.sessions.length) {
-      setData((old) => flatten([...old, copyCourse].sort((a, b) => a.priority - b.priority)));
+      setData((old) => flatten([...old.filter((c) => c.code !== courseId), copyCourse].sort((a, b) => a.priority - b.priority)));
       closeWindow();
     } else {
       const alert = document.getElementById('SubmitCourseAlert');
@@ -72,46 +85,7 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
     document.getElementById('add-course-container')!.remove();
   };
 
-  const CreateRow = ({ rowIdx, course }: { rowIdx: number; course: RefObject<Course> }) => {
-    const [showSchedule, setShowSchedule] = useState(false);
-
-    const toggleSchedule = (e: MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      document.body.style.overflow = showSchedule ? 'auto' : 'hidden';
-      setShowSchedule(!showSchedule);
-    };
-
-    return (
-      <>
-        {nestedTable(rowIdx).map(([_, __, id]) => (
-          <td key={`cell_${id}`}>
-            {id != 'dates' ? (
-              <input
-                key={`input_${id}`}
-                type={'number'}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (+value > 0) course.current!.sessions[rowIdx][id].push(+value);
-                }}
-              />
-            ) : (
-              <div>
-                <div className='popup popup-schedule' style={{ zIndex: 200, display: showSchedule ? '' : 'none' }}>
-                  <button className='popup-schedule-close' onClick={toggleSchedule}>
-                    X
-                  </button>
-                  <Schedule idx={rowIdx} courseOptions={course} />
-                </div>
-                <IconButton className='required-input' onClick={toggleSchedule} sx={{ margin: 0, padding: 0, height: 25 }}>
-                  <SlCalender color='black' size={20} />
-                </IconButton>
-              </div>
-            )}
-          </td>
-        ))}
-      </>
-    );
-  };
+  useEffect(insertSession, []);
 
   return (
     <div id='add-course-container' className='popup'>
@@ -129,6 +103,8 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
         severity='error'
       >
         Complete all required fields or cancel instead!
+        <br />
+        Insert at least one session by adding a section, a group, or a date!
       </Alert>
 
       <Button onClick={closeWindow} sx={{ margin: '.5rem', backgroundColor: 'red !important' }} variant='contained'>
@@ -150,10 +126,30 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
                   required
                   key={'input_' + id}
                   type={id == 'credits' ? 'number' : 'text'}
+                  value={course.current[id]}
                   min={1}
                   onChange={(e) => {
                     const value = e.target.value;
                     course.current[id] = +value > 0 ? +value : value.toUpperCase();
+                    if (id == 'code') {
+                      setData((courses) => {
+                        const alreadyExistentCourse = courses.find((oldCourse) => oldCourse.code === course.current[id]);
+                        if (alreadyExistentCourse) {
+                          clearSessions();
+                          course.current = JSON.parse(JSON.stringify(alreadyExistentCourse));
+
+                          for (let i = 0; i < course.current.sessions.length; i++) {
+                            const dates = Array(40);
+                            course.current.sessions[rowIdx.current].dates.forEach((date) => (dates[date] = date));
+                            course.current.sessions[rowIdx.current].dates = dates;
+                            insertSession();
+                          }
+                          setCourseId(() => alreadyExistentCourse.code);
+                        }
+                        return courses;
+                      });
+                    }
+                    setCourse(() => ({ ...course }));
                   }}
                 />
               </td>
@@ -175,5 +171,67 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
         </Button>
       </div>
     </div>
+  );
+};
+
+const CreateRow = ({
+  rowIdx,
+  course,
+  setCourse,
+}: {
+  rowIdx: number;
+  course: RefObject<Course>;
+  setCourse: Dispatch<SetStateAction<React.MutableRefObject<Course>>>;
+}) => {
+  const [showSchedule, setShowSchedule] = useState(false);
+  const [values, setValues] = useState(course.current.sessions[rowIdx]);
+
+  useEffect(() => {
+    setCourse((course) => {
+      course.current.sessions[rowIdx].section = values.section;
+      course.current.sessions[rowIdx].group = values.group;
+      return { ...course };
+    });
+  }, [values]);
+
+  const toggleSchedule = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    document.body.style.overflow = showSchedule ? 'auto' : 'hidden';
+    setShowSchedule(!showSchedule);
+  };
+
+  return (
+    <>
+      {nestedTable(rowIdx).map(([_, __, id]) => (
+        <td key={`cell_${id}`}>
+          {id != 'dates' ? (
+            <input
+              key={`input_${id}`}
+              type='number'
+              value={values[id]}
+              onChange={(e) => {
+                const value = parseInt(e.target.value);
+                setValues((values) => {
+                  values[id] = isNaN(value) ? [] : [value];
+                  return { ...values };
+                });
+              }}
+            />
+          ) : (
+            <div>
+              <div className='popup popup-schedule' style={{ zIndex: 200, display: showSchedule ? '' : 'none' }}>
+                <button className='popup-schedule-close' onClick={toggleSchedule}>
+                  X
+                </button>
+                <Schedule idx={rowIdx} courseOptions={course} />
+              </div>
+              <IconButton onClick={toggleSchedule} sx={{ margin: 0, padding: 0, height: 25 }}>
+                <SlCalender color='black' size={20} />
+              </IconButton>
+            </div>
+          )}
+        </td>
+      ))}
+    </>
   );
 };
