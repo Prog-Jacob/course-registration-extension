@@ -25,7 +25,33 @@ const Schedule = ({
   if (!toggler) {
     for (const course of courses!) {
       for (let i = 0; i < 40; i++) {
-        if (course.dates[i]) schedule[Math.floor(i / 8)][i % 8] = course.name.toUpperCase();
+        const slot = i % 8;
+        const day = Math.floor(i / 8);
+        const oldName = schedule[day][slot];
+        let name = course.name.toUpperCase();
+
+        if (course.dates[i]) {
+          if (oldName.startsWith(seed)) {
+            let newName = name.split('-')[0] + '-';
+
+            for (const ch of 'GS') {
+              const regex = new RegExp(ch + '([0-9&]+)');
+              const newGroups = (name.match(regex) ?? ['', ''])[1].split('&');
+              const oldGroups = (oldName.match(regex) ?? ['', ''])[1].split('&');
+              const allGroups = new Set([...newGroups, ...oldGroups]);
+              const groups = [...allGroups]
+                .filter((g) => g != '')
+                .sort()
+                .join('&');
+              if (groups.length) newName += ch + groups + ' ';
+            }
+            newName = newName.trim();
+            if (newName.endsWith('-')) newName += 'NA';
+            name = newName;
+          }
+
+          schedule[day][slot] = name;
+        }
       }
     }
   }
@@ -59,7 +85,7 @@ const Schedule = ({
                       <Cell
                         key={`${i}-${j}`}
                         toggler={toggler ? i * 8 + j : undefined}
-                        name={slot.startsWith(seed) ? slot.split(' ')[1] : slot}
+                        name={slot.startsWith(seed) ? slot.split('-')[1] : slot}
                         colSpan={temp}
                         options={options}
                         courseOptions={courseOptions}

@@ -1,4 +1,5 @@
 import { Course, CourseOptions, ScheduleOptions } from '../types/course';
+import TipsAndTricks from '../components/tips_and_tricks';
 import { FormOptions } from '../components/form_options';
 import { useEffect, useState, useRef } from 'react';
 import { Table } from '../components/courses/main';
@@ -95,9 +96,7 @@ function SetOptions() {
         Maximum number of courses reached, use Must Include, Must Exclude, or Co-Requisites to group courses together!
       </Alert>
       <FormOptions scheduleOptions={scheduleOptions} setCourseOptions={setCourseOptions} onClick={submitForm} />
-      <div>
-        <br />
-      </div>
+      <TipsAndTricks />
       <Table originalData={originalData} setOriginalData={setOriginalData} groups={groupsRef} />
     </>
   );

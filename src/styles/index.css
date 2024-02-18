@@ -40,8 +40,10 @@ html {
 
 body {
   margin: 0;
-  width: 600px;
-  height: 500px;
+  width: 100vw;
+  height: 100vh;
+  min-width: 600px;
+  min-height: 600px;
   scrollbar-width: none;
   padding: 0 !important;
   overflow: auto !important;

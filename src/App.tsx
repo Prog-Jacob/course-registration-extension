@@ -8,15 +8,17 @@ import React from 'react';
 
 function App() {
   return (
-    <div style={{ display: 'flex', minHeight: '500px', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'column' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'column' }}>
       <Header />
-      <Router>
-        <Routes>
-          <Route index element={<Home />}></Route>
-          <Route path='/courses' element={<SetOptions />} />
-          <Route path='/schedules' element={<ViewSchedules />}></Route>
-        </Routes>
-      </Router>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+        <Router>
+          <Routes>
+            <Route index element={<Home />}></Route>
+            <Route path='/courses' element={<SetOptions />} />
+            <Route path='/schedules' element={<ViewSchedules />}></Route>
+          </Routes>
+        </Router>
+      </div>
       <Footer />
     </div>
   );

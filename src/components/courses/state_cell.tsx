@@ -14,6 +14,7 @@ import React from 'react';
 
 export const StateCell = ({ table, row }: { table: Table<Course>; row: Row<Course> }) => {
   return (() => {
+    // '-' is not allowed in the seed.
     const seed = '&g![a8#>p';
     const meta = table.options.meta;
     const curr = row.original.priority;
@@ -37,11 +38,10 @@ export const StateCell = ({ table, row }: { table: Table<Course>; row: Row<Cours
           <Schedule
             courses={(row.original as Course).sessions.map((session, idx) => {
               return {
-                name: `${seed}${idx} ${(() => {
-                  if (session.group?.length && session.section?.length) return `G${session.group.join('&')} S${session.section.join('&')}`;
-                  if (!(session.group?.length || session.section?.length)) return 'NA';
+                name: `${seed}${idx}-${(() => {
+                  if (session.section?.length) return `S${session.section.join('&')}`;
                   if (session.group?.length) return `G${session.group.join('&')}`;
-                  return `S${session.section!.join('&')}`;
+                  return 'NA';
                 })()}`,
                 dates: (() => {
                   const ans = new Array(40).fill(false);
