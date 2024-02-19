@@ -11,7 +11,7 @@ export type Session = {
   dates: number[];
   group: number[];
   section: number[];
-  isDisabled?: boolean;
+  isFull?: boolean;
   sectionNotes?: string;
 };
 

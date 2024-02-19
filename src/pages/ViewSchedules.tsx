@@ -9,7 +9,7 @@ import { Combination } from '../types/combination';
 import { useReactToPrint } from 'react-to-print';
 import { CourseGroups } from '../types/course';
 import { AiFillPrinter } from 'react-icons/ai';
-import Scheduler from '../services/algorithm';
+import Scheduler from '../services/scheduler';
 import React from 'react';
 
 function ViewSchedules() {

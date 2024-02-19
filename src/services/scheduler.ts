@@ -1,6 +1,6 @@
 import { Combination, Schedule } from '../types/combination';
-import { Course, ScheduleOptions } from '../types/course';
 import candidateCourses from '../modules/candidate_courses';
+import { Course, ScheduleOptions } from '../types/course';
 import { CourseGroups } from '../types/course';
 import { Trie } from './prefix_tree';
 
@@ -20,7 +20,7 @@ export default class Scheduler {
 
   // Schedules
   private baseSchedules: Schedule[];
-  private considerDisabled: boolean;
+  private considerFull: boolean;
   private conflicts: Trie;
 
   // Groups
@@ -29,7 +29,7 @@ export default class Scheduler {
 
   constructor(courses: Course[][], options: ScheduleOptions, groups: CourseGroups) {
     this.baseSchedules = [{ sessions: [], dates: options.exclude_dates }];
-    this.considerDisabled = options.considerDisabled ?? false;
+    this.considerFull = options.considerDisabled ?? false;
     this.min = options.minCredits;
     this.max = options.maxCredits;
     this.courses = [...courses];
@@ -127,13 +127,13 @@ export default class Scheduler {
     this.courses = this.courses.map((level) => {
       return level.map((course) => ({
         ...course,
-        sessions: course.sessions
-          .filter((session) => session.dates.length && (this.considerDisabled || !session.isDisabled))
-          .map((session) => ({
-            ...session,
-            group: !course.options.group ? session.group ?? [] : (session.group ?? []).filter((g) => g == course.options.group),
-            section: !course.options.section ? session.section ?? [] : (session.section ?? []).filter((s) => s == course.options.section),
-          })),
+        sessions: course.sessions.filter((session) => {
+          return (
+            (this.considerFull || !session.isFull) &&
+            (!course.options.group || session.group.includes(course.options.group)) &&
+            (!course.options.section || session.section.includes(course.options.section))
+          );
+        }),
       }));
     });
   }

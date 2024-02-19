@@ -82,7 +82,7 @@ export default function parseSessions(body: string): Session[] {
       group: groupsArr.sort((a, b) => a - b),
       dates: Array.from(sessionDates),
       sectionNotes: sectionNotes,
-      isDisabled: isDisabled,
+      isFull: isDisabled,
     };
 
     sessions.push(session);

@@ -1,16 +1,61 @@
-# Getting Started with the App
+# Course Registration Assistant
 
-This project was built and tested with Node v18.18 and pnpm v8.7.6
+The Course Registration Assistant is a Chrome extension designed to streamline the course registration process for students. Avoid the hassle of schedule conflicts, customize your schedule, and register for all your courses at ease!
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Course Navigation:** View your courses in a single run without the need of multiple prolonged requests.
 
-### `pnpm run build`
+- **Registration Customization:** Tailor your registration needs with a range of customizable options, including timing, credit hours, groups, and sections.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Time Management:** Exclude specific dates to accommodate personal commitments or ensure availability during important events.
 
-### `pnpm run publish`
-Compress and archive the build folder into a zip file.\
-It requires `zip` utility to be installed on the system.
+- **Priority-Based Selection:** Prioritize your important courses by enforcing or ordering them.
+
+- **Advanced Course Management:** Control your course list with features to exclude undesired courses, group mutually-exclusive courses, or bundle co-requisite courses together.
+
+- **Streamlined Course Addition:** Easily include full courses automatically or manually add courses, with options for advisor-assisted additions when needed.
+
+- **Printable Schedules:** Print your generated schedules for quick reference and offline use.
+
+## Installation
+
+#### Chrome/Edge/Opera/Etc:
+
+1. [Click to download extension](https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/download/course_registration_assistant-1.1.3.zip).
+
+2. Follow the following instructions:
+
+![Instructions to install the extension on Chromium-based browsers](...)
+
+#### Firefox:
+
+1. [Click to download extension](https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/download/course_registration_assistant-1.1.3.xpi).
+
+2. Follow the following instructions:
+
+![Instructions to install the extension on Firefox browsers](...)
+
+## Usage
+
+1. Navigate to your university's Student Information System (SIS) page.
+2. Open the Course Registration Assistant extension by clicking on its icon in the Chrome toolbar.
+3. Customize your course preferences using the available options.
+4. Generate multiple schedule options and review them to ensure they meet your requirements.
+5. Select your preferred schedule and register for your courses accordingly.
+
+## Contributing
+
+Contributions to the Course Registration Assistant are welcome! To contribute, please follow these steps:
+
+1. Fork the repository and clone it to your local machine.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and submit a pull request with a helpful description of your changes.
+
+## Issues
+
+If you encounter any bugs or have suggestions for new features, please open an issue on the GitHub repository.
+
+## License
+
+The Course Registration Assistant is licensed under the [MIT License](./LICENSE).
