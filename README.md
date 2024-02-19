@@ -26,7 +26,7 @@ The Course Registration Assistant is a Chrome extension designed to streamline t
 
 2. Follow the following instructions:
 
-![Instructions to install the extension on Chromium-based browsers](...)
+https://github.com/Prog-Jacob/course-registration-extension/assets/84212225/03ac2ba8-422d-4552-af3a-279c36668ed5
 
 #### Firefox:
 
@@ -34,7 +34,7 @@ The Course Registration Assistant is a Chrome extension designed to streamline t
 
 2. Follow the following instructions:
 
-![Instructions to install the extension on Firefox browsers](...)
+https://github.com/Prog-Jacob/course-registration-extension/assets/84212225/ed399fec-6a39-4430-98df-0c0ddf9f75d0
 
 ## Usage
 
