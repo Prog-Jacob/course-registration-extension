@@ -4,7 +4,7 @@
 source .env
 
 # Define variables
-extension_name="course_registration_assistant"
+extension_name="course_registeration_assistant"
 version=$(grep -oP '(?<="version": ")[^"]*' "$BUILD_DIR/manifest.json")
 firefox_xpi_filename="${extension_name}-${version}.xpi"
 chrome_zip_filename="${extension_name}-${version}.zip"
