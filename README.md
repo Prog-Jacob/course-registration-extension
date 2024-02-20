@@ -34,7 +34,7 @@ https://github.com/Prog-Jacob/course-registration-extension/assets/84212225/03ac
 
 2. Follow the following instructions:
 
-https://github.com/Prog-Jacob/course-registration-extension/assets/84212225/ed399fec-6a39-4430-98df-0c0ddf9f75d0
+https://github.com/Prog-Jacob/course-registration-extension/assets/84212225/26abd4d8-8cf2-4231-af6c-68a4da2e714b
 
 ## Usage
 
