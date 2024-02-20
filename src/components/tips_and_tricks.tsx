@@ -41,7 +41,7 @@ function TipsAndTricks() {
           </li>
           <li>
             Click the <IoIosAddCircle color='var(--secondary)' /> button to add/modify a course manually. To modify a course, type its{' '}
-            <em>Course Code</em>.
+            <em>Course Code</em>. Then, to remove a session unset all its fields (section, group, and dates).
           </li>
           <li>
             Click the <span style={{ color: 'var(--secondary)' }}>✐</span> icon to modify group/section for individual courses.

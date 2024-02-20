@@ -19,7 +19,7 @@ function SetOptions() {
     options: ScheduleOptions;
     groups: CourseGroups;
     retrievedCourseOptions: CourseOptions;
-  } = history.state.usr ?? {
+  } = JSON.parse(localStorage.getItem('state')) ?? {
     courses: [],
     options: {
       exclude_dates: new Array(40).fill(false),
@@ -68,6 +68,16 @@ function SetOptions() {
       }
       return;
     }
+
+    localStorage.setItem(
+      'state',
+      JSON.stringify({
+        courses: originalData,
+        groups: groupsRef.current,
+        options: scheduleOptions.current,
+        retrievedCourseOptions: courseOptions,
+      }),
+    );
 
     navigate('/schedules', {
       state: {

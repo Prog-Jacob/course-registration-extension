@@ -92,13 +92,7 @@ function ViewSchedules() {
   };
 
   const backToCourses = () => {
-    navigate('/courses', {
-      state: {
-        courses: courses.flat(),
-        options: options,
-        groups: groups,
-      },
-    });
+    navigate('/courses');
   };
 
   const handlePrint = useReactToPrint({

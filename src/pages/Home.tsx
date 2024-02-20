@@ -10,19 +10,15 @@ function Home() {
   const [response, setResponse] = useState<DOMResponse>(['00']);
 
   const navigateToCourses = (courses: Course[]) => {
-    navigate('/courses', {
-      state: {
-        courses: courses.map((course) => ({ ...course })),
-        options: {
-          exclude_dates: new Array(40).fill(false),
-          maxCredits: 20,
-          minCredits: 14,
-        },
-        retrievedCourseOptions: {
-          group: 0,
-          section: 0,
-        },
-      },
+    chrome.tabs.create({ url: document.URL + '#/courses' }, () => {
+      localStorage.setItem(
+        'state',
+        JSON.stringify({
+          courses,
+          options: { exclude_dates: new Array(40).fill(false), maxCredits: 20, minCredits: 14 },
+          retrievedCourseOptions: { group: 0, section: 0 },
+        }),
+      );
     });
   };
 
