@@ -26,28 +26,38 @@ export default function parseSessions(body: string): Session[] {
   if (!rows) return [];
 
   let isDisabled = false;
+  let isSection = false;
   let sessionState = '';
   let sectionNotes = '';
+  let i = 0;
 
   Object.values(rows).forEach((row) => {
     const check = row.querySelector(`[id$="_cbSelectGroup"]`) as HTMLInputElement;
     const status = clean(row.querySelector(`[id$="_lblSecStatus"]`)?.innerHTML ?? '').toLowerCase();
+    const teachingMethod = clean(row.querySelector(`[id$="_lbllastgrade"]`)?.innerHTML ?? '').toLowerCase();
 
     if (check) {
       AddSessions();
+      isSection = false;
       sessionState = status;
       isDisabled = check.disabled;
+      i++;
     }
     if (isDisabled && sessionState == 'schedule conflict') return;
+    isSection ||= ['tut', 'lab'].includes(teachingMethod);
+
     // Following code should be parsing student's faculty instead.
     const course = clean(row.querySelector(`[id$="_lblCourseCode"]`)?.innerHTML ?? '!!!')
       .slice(0, 3)
       .toUpperCase();
+    const section = clean(row.querySelector(`[id$="_lblSection"]`)?.innerHTML ?? '').replace(
+      /1\s?st|2\s?nd|3\s?rd|4\s?th|5\s?th|6\s?th|7\s?th|8\s?th|9\s?th/i,
+      '',
+    );
     const day = clean(row.querySelector(`[id$="_lblDays"]`)?.innerHTML ?? '').toLocaleLowerCase();
     const from = new Date(today + clean(row.querySelector(`[id$="_lblFrom"]`)?.innerHTML ?? ''));
     const to = new Date(today + clean(row.querySelector(`[id$="_lblTo"]`)?.innerHTML ?? ''));
-    const section = clean(row.querySelector(`[id$="_lblSection"]`)?.innerHTML ?? '');
-    const notesRegex = new RegExp(`SEC|GROUP|TUT|LAB|${course}`);
+    const notesRegex = new RegExp(`SEC|GROUP|LEC|TUT|LAB|${course}`);
 
     sectionNotes = Array.from(section.matchAll(/[A-Z]{3,}/g))
       .map((elem) => elem[0])
@@ -60,8 +70,8 @@ export default function parseSessions(body: string): Session[] {
       });
     });
 
-    const regexSection = /(?:s|sec|section)\s?(\d{1,2}(?:\s?(?:and|&amp;|&|,|-)\s?\d{1,2})*)/i;
-    const regexGroup = /(?:g|group)\s?(\d{1,2}(?:\s?(?:and|&amp;|&|,|-)\s?\d{1,2})*)/i;
+    const regexSection = /(?:s|sec|section)\s?(\d{1,2}(?:\s?(?:and|&amp;|&|,|-|\+|or|\\|\||\/)\s?\d{1,2})*)/i;
+    const regexGroup = /(?:g|group)\s?(\d{1,2}(?:\s?(?:and|&amp;|&|,|-|\+|or|\\|\||\/)\s?\d{1,2})*)/i;
     const matchSection = section.match(regexSection);
     const matchGroup = section.match(regexGroup);
 
@@ -74,6 +84,7 @@ export default function parseSessions(body: string): Session[] {
 
   function AddSessions() {
     if (!sessionDates.size) return;
+    if (i > 0 && sections.size == 0 && groups.size == 0 && isSection) sections.add(i);
     const sectionsArr = Array.from(sections);
     const groupsArr = Array.from(groups);
 

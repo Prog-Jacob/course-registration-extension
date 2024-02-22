@@ -2,7 +2,7 @@ import { clean } from '../modules/DOM';
 import { Course } from '../types/course';
 import { fetchSessions } from './fetch_sessions';
 
-export async function parseCourses(body: string, studentId: string): Promise<Course[]> {
+export async function parseCourses(body: string): Promise<Course[]> {
   const courses: Course[] = [];
   const parser = new DOMParser();
   const viewState = body.match(/__VIEWSTATE\|(.*?)\|/)[1];
@@ -21,7 +21,7 @@ export async function parseCourses(body: string, studentId: string): Promise<Cou
     const name = (rows[i].querySelector(`[id$="_cbSelect"]`) as HTMLInputElement).name;
 
     try {
-      const sessions = await fetchSessions(name, viewState, eventValidation, studentId, rest as string);
+      const sessions = await fetchSessions(name, viewState, eventValidation, rest as string);
       courses.push({
         code: clean(cells[0].innerHTML),
         name: clean(cells[1].innerHTML),
