@@ -11,6 +11,10 @@ chrome_zip_filename="${extension_name}-${version}.zip"
 
 echo "Version ${version} is being published..."
 
+# Remove previous build files
+rm -r $DEST_DIR
+echo "Previous build files are removed successfully."
+
 # Create Chrome zip file
 web-ext build --overwrite-dest \
     --artifacts-dir=$DEST_DIR \

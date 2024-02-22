@@ -130,8 +130,8 @@ export default class Scheduler {
         sessions: course.sessions.filter((session) => {
           return (
             (this.considerFull || !session.isFull) &&
-            (!course.options.group || session.group.includes(course.options.group)) &&
-            (!course.options.section || session.section.includes(course.options.section))
+            (!course.options.group || session.group.length == 0 || session.group.includes(course.options.group)) &&
+            (!course.options.section || session.section.length == 0 || session.section.includes(course.options.section))
           );
         }),
       }));
