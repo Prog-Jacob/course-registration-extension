@@ -4,31 +4,45 @@
 source .env
 
 # Define variables
-extension_name="course_registration_assistant"
 version=$(grep -oP '(?<="version": ")[^"]*' "$BUILD_DIR/manifest.json")
-firefox_xpi_filename="${extension_name}-${version}.xpi"
-chrome_zip_filename="${extension_name}-${version}.zip"
+extension_name="course_registration_assistant"
+filename="$extension_name-$version"
+release_dir="$DEST_DIR/v$version"
 
-echo "Version ${version} is being published..."
+echo "Version $version is being published..."
 
-# Remove previous build files
-rm -r $DEST_DIR
-echo "Previous build files are removed successfully."
+# Prepare the release directory
+cd $DEST_DIR
+mkdir v$version
+rm $extension_name-*.crx
+cd ..
+
 
 # Create Chrome zip file
-web-ext build --overwrite-dest \
-    --artifacts-dir=$DEST_DIR \
-    --source-dir=$BUILD_DIR
-echo "${chrome_zip_filename} is published successfully."
+web-ext build --artifacts-dir=$release_dir \
+    --filename="$filename.zip" \
+    --source-dir=$BUILD_DIR \
+    --no-config-discovery \
+    --overwrite-dest
+
+# Create and Sign Chrome crx file
+crx pack $BUILD_DIR -p $PRIVATE_KEY_PATH -o "$DEST_DIR/$filename.crx"
+
+echo "Chrome extension ${filename} is published successfully."
 
 # Create and Sign Firefox xpi file
 web-ext sign --api-key=$AMO_JWT_ISSUER \
- --api-secret=$AMO_JWT_SECRET \
- --artifacts-dir=$DEST_DIR \
- --source-dir=$BUILD_DIR \
- --channel=unlisted
-echo "${firefox_xpi_filename} is published successfully."
+    --api-secret=$AMO_JWT_SECRET \
+    --artifacts-dir=$release_dir \
+    --source-dir=$BUILD_DIR \
+    --no-config-discovery \
+    --channel=unlisted
+mv $release_dir/*.xpi $release_dir/$filename.xpi
+
+echo "Firefox extension ${filename} is published successfully."
 
 # Update Readme File
-sed -i "s/${extension_name}-[0-9].[0-9].[0-9]/${extension_name}-${version}/g" $README_PATH
-echo "README file is updated successfully."
+# Caution: This will change every version-like string in these files.
+sed -i "s/[0-9]\+\.[0-9]\+\.[0-9]\+/$version/g" $DEST_DIR/updates.*
+sed -i "s/[0-9]\+\.[0-9]\+\.[0-9]\+/$version/g" $README_PATH
+echo "All links are updated successfully."
