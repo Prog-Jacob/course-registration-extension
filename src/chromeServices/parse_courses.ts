@@ -5,8 +5,9 @@ import { fetchSessions } from './fetch_sessions';
 export async function parseCourses(body: string): Promise<Course[]> {
   const courses: Course[] = [];
   const parser = new DOMParser();
-  const viewState = body.match(/__VIEWSTATE\|(.*?)\|/)[1];
-  const eventValidation = body.match(/__EVENTVALIDATION\|(.*?)\|/)[1];
+  const viewState = (body.match(/__VIEWSTATE\|(.*?)\|/) ?? [])[1];
+  const eventValidation = (body.match(/__EVENTVALIDATION\|(.*?)\|/) ?? [])[1];
+  if (!viewState || !eventValidation) return [];
 
   const doc = parser.parseFromString(body, 'text/html');
   const table = doc.getElementById('ctl00_cntphmaster_grdData');

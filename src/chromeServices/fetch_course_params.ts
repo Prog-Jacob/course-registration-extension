@@ -7,6 +7,7 @@ export default async function fetchCourseParams(): Promise<[viewState: string, e
     mode: 'cors',
     credentials: 'include',
   });
+  if (response.redirected) return [null, null];
   const body = await response.text();
 
   const parser = new DOMParser();

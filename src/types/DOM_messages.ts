@@ -25,6 +25,6 @@ export const DOMErrors = {
   '13': "Couldn't register for course. SIS error!",
   '19': 'Successfully registered this course.',
 
-  '98': 'Unknown Request.',
-  '99': 'Unexpected Error.',
+  '98': 'Unknown Request, try again.',
+  '99': 'Unexpected Error, ensure you are logged in and registration is open.',
 };

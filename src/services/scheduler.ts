@@ -1,3 +1,4 @@
+import sortSchedulesByFreeTime from '../modules/schedules_sorting';
 import { Combination, Schedule } from '../types/combination';
 import candidateCourses from '../modules/candidate_courses';
 import { Course, ScheduleOptions } from '../types/course';
@@ -204,7 +205,8 @@ export default class Scheduler {
           this.conflicts.insert((copyMask & ((1 << ++i) - 1)).toString(2).split('').reverse().join(''));
           return { ...ans, schedules: [] };
         }
-        ans.schedules = nextSchedules;
+
+        ans.schedules = sortSchedulesByFreeTime(nextSchedules);
       }
 
       mask >>= 1;
