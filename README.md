@@ -2,6 +2,30 @@
 
 The Course Registration Assistant is a Chrome extension designed to streamline the course registration process for students. Avoid the hassle of schedule conflicts, customize your schedule, and register for all your courses at ease!
 
+# Table of Contents
+
+- [Preview](#preview)
+- [Features](#features)
+- [Installation](#installation)
+  - [Chrome/Edge/Opera/Etc.](#chromeedgeoperaetc)
+  - [Firefox.](#firefox)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+
+<a name="preview"></a>
+
+## Preview
+
+<img src="https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/assets/Schedule.png" height="205"></img>
+<img src="https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/assets/ScheduleDetails.png" height="205"></img>
+<img src="https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/assets/FormOptions.png" width="23%"></img>
+<img src="https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/assets/CourseCustomization.png" width="23%"></img>
+<img src="https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/assets/CourseAddition.png" width="23%"></img>
+<img src="https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/assets/SchedulePage.png" width="23%"></img>
+
+<a name="features"></a>
+
 ## Features
 
 - **Course Navigation:** View your courses in a single run without the need of multiple prolonged requests.
@@ -18,7 +42,11 @@ The Course Registration Assistant is a Chrome extension designed to streamline t
 
 - **Printable Schedules:** Print your generated schedules for quick reference and offline use.
 
+<a name="installation"></a>
+
 ## Installation
+
+<a name="chromeedgeoperaetc"></a>
 
 #### Chrome/Edge/Opera/Etc:
 
@@ -28,6 +56,8 @@ The Course Registration Assistant is a Chrome extension designed to streamline t
 
 https://github.com/Prog-Jacob/course-registration-extension/assets/84212225/03ac2ba8-422d-4552-af3a-279c36668ed5
 
+<a name="firefox"></a>
+
 #### Firefox:
 
 1. [Click to download extension](https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/v1.2.4/course_registration_assistant-1.2.4.xpi).
@@ -35,6 +65,8 @@ https://github.com/Prog-Jacob/course-registration-extension/assets/84212225/03ac
 2. Follow the following instructions:
 
 https://github.com/Prog-Jacob/course-registration-extension/assets/84212225/26abd4d8-8cf2-4231-af6c-68a4da2e714b
+
+<a name="usage"></a>
 
 ## Usage
 
@@ -44,17 +76,17 @@ https://github.com/Prog-Jacob/course-registration-extension/assets/84212225/26ab
 4. Generate multiple schedule options and review them to ensure they meet your requirements.
 5. Select your preferred schedule and register for your courses accordingly.
 
+<a name="contributing"></a>
+
 ## Contributing
 
-Contributions to the Course Registration Assistant are welcome! To contribute, please follow these steps:
+Contributions to the Course Registration Assistant are welcome! If you encounter any bugs or have suggestions for new features, please open an issue at the top of the page. To implement the changes yourself, please follow these steps:
 
-1. Fork the repository and clone it to your local machine.
-2. Create a new branch for your feature or bug fix.
-3. Make your changes and submit a pull request with a helpful description of your changes.
+1. Fork the repository and clone it to your development machine.
+2. Make the required changes on the forked repository.
+3. Submit a pull request with a helpful description of the changes.
 
-## Issues
-
-If you encounter any bugs or have suggestions for new features, please open an issue on the GitHub repository.
+<a name="license"></a>
 
 ## License
 
