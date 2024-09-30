@@ -1,4 +1,4 @@
-import { Course, CourseOptions, ScheduleOptions } from '../types/course';
+import { Course, ScheduleOptions } from '../types/course';
 import TipsAndTricks from '../components/tips_and_tricks';
 import { FormOptions } from '../components/form_options';
 import { useEffect, useState, useRef } from 'react';
@@ -8,33 +8,48 @@ import { useNavigate } from 'react-router-dom';
 import { Alert } from '@mui/material';
 import React from 'react';
 
+export const defaultData = {
+  groups: {},
+  courses: [],
+  scheduleOptions: {
+    maxCredits: 20,
+    minCredits: 14,
+    priorities: [
+      { id: 'preferShortWeek', label: 'I do [NOT] prefer short weeks.' },
+      { id: 'preferShortDays', label: 'I do [NOT] prefer short days.' },
+      {
+        id: 'preferLateSessions',
+        label: 'I do [NOT] prefer attending late sessions.',
+        reverse: true,
+      },
+      {
+        id: 'preferEarlySessions',
+        label: 'I do [NOT] prefer attending early sessions.',
+        reverse: true,
+      },
+      { id: 'preferLessDays', label: 'I do [NOT] prefer attending less days.' },
+    ],
+    group: 0,
+    section: 0,
+    preferMin: false,
+    considerDisabled: true,
+    exclude_dates: new Array(40).fill(false),
+  },
+};
+
 function SetOptions() {
-  const {
-    courses,
-    options,
-    groups,
-    retrievedCourseOptions,
-  }: {
-    courses: Course[];
-    options: ScheduleOptions;
-    groups: CourseGroups;
-    retrievedCourseOptions: CourseOptions;
-  } = JSON.parse(localStorage.getItem('state')) ?? {
-    courses: [],
-    options: {
-      exclude_dates: new Array(40).fill(false),
-      maxCredits: 20,
-      minCredits: 14,
-    },
-    retrievedCourseOptions: {
-      group: 0,
-      section: 0,
-    },
-  };
-  const [courseOptions, setCourseOptions] = useState<CourseOptions>(retrievedCourseOptions ?? {});
-  const [originalData, setOriginalData] = useState<Course[]>(courses);
-  const scheduleOptions = useRef<ScheduleOptions>({ ...options, preferMin: false, considerDisabled: false });
-  const groupsRef = useRef<CourseGroups>(groups ?? {});
+  const [originalData, setOriginalData] = useState<Course[]>(
+    JSON.parse(localStorage.getItem('state:courses')) || defaultData.courses
+  );
+  const [isMaxExceeded, setIsMaxExceeded] = useState<boolean>(false);
+  const [shouldUpdateCourses, setShouldUpdateCourses] = useState(0);
+
+  const scheduleOptions = useRef<ScheduleOptions>(
+    JSON.parse(localStorage.getItem('state:scheduleOptions')) || defaultData.scheduleOptions
+  );
+  const groups = useRef<CourseGroups>(
+    JSON.parse(localStorage.getItem('state:groups')) || defaultData.groups
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,12 +57,12 @@ function SetOptions() {
       old.map((course) => ({
         ...course,
         options: {
-          group: courseOptions.group ?? course.options.group,
-          section: courseOptions.section ?? course.options.section,
+          group: scheduleOptions.current.group ?? course.options.group,
+          section: scheduleOptions.current.section ?? course.options.section,
         },
-      })),
+      }))
     );
-  }, [courseOptions]);
+  }, [shouldUpdateCourses]);
 
   const submitForm = () => {
     const leveledCourses: Course[][] = [];
@@ -55,59 +70,57 @@ function SetOptions() {
     originalData.forEach((course, idx) =>
       course.priority == originalData[idx - 1]?.priority
         ? leveledCourses[leveledCourses.length - 1].push(course)
-        : leveledCourses.push([course]),
+        : leveledCourses.push([course])
     );
 
     if (leveledCourses.length > 30) {
-      const alert = document.getElementById('SubmitAlert');
-      if (alert) {
-        alert.style.display = 'flex';
+      if (!isMaxExceeded) {
+        setIsMaxExceeded(true);
         setTimeout(() => {
-          alert.style.display = 'none';
+          setIsMaxExceeded(false);
         }, 5000);
       }
       return;
     }
 
-    localStorage.setItem(
-      'state',
-      JSON.stringify({
-        courses: originalData,
-        groups: groupsRef.current,
-        options: scheduleOptions.current,
-        retrievedCourseOptions: courseOptions,
-      }),
-    );
+    localStorage.setItem('state:courses', JSON.stringify(originalData));
+    localStorage.setItem('state:groups', JSON.stringify(groups.current));
+    localStorage.setItem('state:scheduleOptions', JSON.stringify(scheduleOptions.current));
 
     navigate('/schedules', {
       state: {
         courses: leveledCourses,
         options: scheduleOptions.current,
-        groups: groupsRef.current,
+        groups: groups.current,
       },
     });
   };
 
   return (
     <>
-      <Alert
-        id='SubmitAlert'
-        sx={{
-          zIndex: 50,
-          position: 'fixed',
-          top: '0',
-          display: 'none',
-          alignItems: 'center',
-          fontSize: '14px',
-          borderRadius: '0px',
-        }}
-        severity='error'
-      >
-        Maximum number of courses reached, use Must Include, Must Exclude, or Co-Requisites to group courses together!
-      </Alert>
-      <FormOptions scheduleOptions={scheduleOptions} setCourseOptions={setCourseOptions} onClick={submitForm} />
+      {isMaxExceeded && (
+        <Alert
+          sx={{
+            zIndex: 50,
+            position: 'fixed',
+            top: '0',
+            alignItems: 'center',
+            fontSize: '14px',
+            borderRadius: '0px',
+          }}
+          severity='error'
+        >
+          Maximum number of courses reached, use Must Include, Must Exclude, or Co-Requisites to
+          group courses together!
+        </Alert>
+      )}
+      <FormOptions
+        scheduleOptions={scheduleOptions}
+        onClick={submitForm}
+        updateCourses={setShouldUpdateCourses}
+      />
       <TipsAndTricks />
-      <Table originalData={originalData} setOriginalData={setOriginalData} groups={groupsRef} />
+      <Table originalData={originalData} setOriginalData={setOriginalData} groups={groups} />
     </>
   );
 }

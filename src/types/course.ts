@@ -24,10 +24,32 @@ export interface CourseGroups {
   [key: string]: string;
 }
 
+export interface Option {
+  id:
+    | 'preferShortWeek'
+    | 'preferLessDays'
+    | 'preferShorterDays'
+    | 'preferEarlySessions'
+    | 'preferLateSessions';
+  reverse: boolean;
+  label: string;
+}
+
 export type ScheduleOptions = {
+  priorities: Option[];
   exclude_dates: boolean[];
   maxCredits: number;
   minCredits: number;
-  preferMin?: boolean;
-  considerDisabled?: boolean;
+  group: number;
+  section: number;
+  preferMin: boolean;
+  considerDisabled: boolean;
+};
+
+export type ScheduleProperties = {
+  startOfTheWeek: number;
+  endOfTheWeek: number;
+  totalFreeDays: number;
+  totalEarlySessions: number;
+  totalLateSessions: number;
 };
