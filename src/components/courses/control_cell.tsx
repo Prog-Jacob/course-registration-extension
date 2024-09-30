@@ -18,7 +18,10 @@ export function ControlCell({ row, table }: { row: Row<Course>; table: Table<Cou
   };
 
   return meta?.editPriority.length ? (
-    <Checkbox onChange={setEditPriority} sx={{ padding: 0, '& .MuiSvgIcon-root': { fontSize: 18, fill: 'var(--secondary)' } }} />
+    <Checkbox
+      onChange={setEditPriority}
+      sx={{ padding: 0, '& .MuiSvgIcon-root': { fontSize: 18, fill: 'var(--secondary)' } }}
+    />
   ) : (
     <FontAwesomeIcon icon={faGripLines} style={{ color: 'var(--secondary)', fontSize: 18 }} />
   );

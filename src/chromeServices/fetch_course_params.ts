@@ -1,12 +1,17 @@
-export default async function fetchCourseParams(): Promise<[viewState: string, eventValidation: string]> {
-  const response = await fetch('https://sis.ejust.edu.eg/UI/StudentViewAdmin/STD_CRS_REG_PLN_Grouping.aspx', {
-    referrer: 'https://sis.ejust.edu.eg/UI/StudentView/Home.aspx',
-    referrerPolicy: 'strict-origin-when-cross-origin',
-    body: null,
-    method: 'GET',
-    mode: 'cors',
-    credentials: 'include',
-  });
+export default async function fetchCourseParams(): Promise<
+  [viewState: string, eventValidation: string]
+> {
+  const response = await fetch(
+    'https://sis.ejust.edu.eg/UI/StudentViewAdmin/STD_CRS_REG_PLN_Grouping.aspx',
+    {
+      referrer: 'https://sis.ejust.edu.eg/UI/StudentView/Home.aspx',
+      referrerPolicy: 'strict-origin-when-cross-origin',
+      body: null,
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'include',
+    }
+  );
   if (response.redirected) return [null, null];
   const body = await response.text();
 

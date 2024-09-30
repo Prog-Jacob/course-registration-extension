@@ -11,10 +11,11 @@
   "quoteProps": "as-needed",
   "requirePragma": false,
   "singleQuote": true,
-  "trailingComma": "all",
+  "trailingComma": "es5",
   "useTabs": false,
   "vueIndentScriptAndStyle": false,
-  "printWidth": 140,
+  "printWidth": 100,
+  "endOfLine": "lf",
   "tabWidth": 2,
   "rangeStart": 0
 }

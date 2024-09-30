@@ -36,6 +36,10 @@ export const TableCell = ({
       onChange={(e) => setValue(((value = e.target.value) => (+value > 0 ? +value : undefined))())}
     />
   ) : (
-    <span {...(columnMeta?.tooltip ? { className: 'tooltip', 'data-text': row.original.name } : {})}>{value || undefined}</span>
+    <span
+      {...(columnMeta?.tooltip ? { className: 'tooltip', 'data-text': row.original.name } : {})}
+    >
+      {value || undefined}
+    </span>
   );
 };

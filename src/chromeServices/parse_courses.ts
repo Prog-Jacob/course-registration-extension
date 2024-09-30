@@ -12,9 +12,12 @@ export async function parseCourses(body: string): Promise<Course[]> {
   const doc = parser.parseFromString(body, 'text/html');
   const table = doc.getElementById('ctl00_cntphmaster_grdData');
   const rows = Object.values(table.querySelectorAll('.table_Row, .table_AlternatingRow'));
-  const rest: unknown = Object.values(doc.querySelectorAll(`[id$="hdnENTCDEPKGTYPEID"], [name$="txtNote"]`)).reduce(
-    (acc, elem: HTMLInputElement) => `${acc}${encodeURIComponent(elem.name)}=${encodeURIComponent(elem.value)}&`,
-    '',
+  const rest: unknown = Object.values(
+    doc.querySelectorAll(`[id$="hdnENTCDEPKGTYPEID"], [name$="txtNote"]`)
+  ).reduce(
+    (acc, elem: HTMLInputElement) =>
+      `${acc}${encodeURIComponent(elem.name)}=${encodeURIComponent(elem.value)}&`,
+    ''
   );
 
   for (let i = 0; i < rows.length; i++) {

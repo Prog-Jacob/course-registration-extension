@@ -6,7 +6,16 @@ import React from 'react';
 
 const seed = '&g![a8#>p'.toUpperCase();
 const days: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
-const timeSlots: string[] = ['09:00', '09:45', '10:45', '11:30', '12:30', '01:15', '02:15', '03:00'];
+const timeSlots: string[] = [
+  '09:00',
+  '09:45',
+  '10:45',
+  '11:30',
+  '12:30',
+  '01:15',
+  '02:15',
+  '03:00',
+];
 
 const Schedule = ({
   courses,

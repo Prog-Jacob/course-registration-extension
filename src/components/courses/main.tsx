@@ -19,7 +19,7 @@ export const flatten = (sortedArr: Course[]) => {
       : {
           ...course,
           priority: course.priority == sortedArr[idx + 1]?.priority ? priority : priority++,
-        },
+        }
   );
 };
 
@@ -57,7 +57,10 @@ export const Table = ({
       .filter((course) => course.priority != movedElementPriority)
       .map((course) => ({
         ...course,
-        priority: course.priority % 1000 == 0 || course.priority < destElementPriority ? course.priority : course.priority + 1,
+        priority:
+          course.priority % 1000 == 0 || course.priority < destElementPriority
+            ? course.priority
+            : course.priority + 1,
       }));
     return flatten([...otherElements, ...movedElements].sort((a, b) => a.priority - b.priority));
   };
@@ -92,7 +95,11 @@ export const Table = ({
   };
 
   const isDragDisabled = (row: Row<Course>) => {
-    return row.original.priority % 1000 == 0 || editPriority.length != 0 || Object.values(editedRows).some((v) => v);
+    return (
+      row.original.priority % 1000 == 0 ||
+      editPriority.length != 0 ||
+      Object.values(editedRows).some((v) => v)
+    );
   };
 
   const table = useReactTable({
@@ -129,7 +136,8 @@ export const Table = ({
 
               const newData = old.map((course, idx) => {
                 if (indices.indexOf(idx) != -1) return { ...course, priority: maxPriority };
-                if (course.priority >= maxPriority) return { ...course, priority: Math.min(course.priority + 1, 1000) };
+                if (course.priority >= maxPriority)
+                  return { ...course, priority: Math.min(course.priority + 1, 1000) };
                 return course;
               });
 
@@ -168,9 +176,13 @@ export const Table = ({
       },
       revertData: (rowIndex: number, revert: boolean) => {
         if (revert) {
-          setData((old) => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)));
+          setData((old) =>
+            old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row))
+          );
         } else {
-          setOriginalData((old) => old.map((row, index) => (index === rowIndex ? data[rowIndex] : row)));
+          setOriginalData((old) =>
+            old.map((row, index) => (index === rowIndex ? data[rowIndex] : row))
+          );
         }
       },
       updateData: (rowIndex: number, columnId: string, value: string) => {
@@ -180,7 +192,7 @@ export const Table = ({
               return modifyObject(old[rowIndex], columnId.split('.'), value) as Course;
             }
             return row;
-          }),
+          })
         );
       },
     },
@@ -188,12 +200,25 @@ export const Table = ({
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: '1rem' }}>
+      <Box
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: '1rem' }}
+      >
         <label className='form-submit' htmlFor='import-courses'>
           Import
         </label>
-        <input id='import-courses' type='file' accept='.json' style={{ display: 'none' }} onChange={handleImport} />
-        <a className='form-submit' download='courses.json' onClick={handleExport} style={{ textDecoration: 'none' }}>
+        <input
+          id='import-courses'
+          type='file'
+          accept='.json'
+          style={{ display: 'none' }}
+          onChange={handleImport}
+        />
+        <a
+          className='form-submit'
+          download='courses.json'
+          onClick={handleExport}
+          style={{ textDecoration: 'none' }}
+        >
           Export
         </a>
       </Box>
@@ -202,7 +227,11 @@ export const Table = ({
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</th>
+                <th key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(header.column.columnDef.header, header.getContext())}
+                </th>
               ))}
             </tr>
           ))}
@@ -210,7 +239,11 @@ export const Table = ({
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId={'dndTableBody'}>
             {(provided) => (
-              <tbody className='course-table-body' ref={provided.innerRef} {...provided.droppableProps}>
+              <tbody
+                className='course-table-body'
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
                 {table.getRowModel().rows.map((row, index) => (
                   <Draggable
                     draggableId={`${row.original.code}_${row.id}`}
@@ -219,9 +252,16 @@ export const Table = ({
                     index={index}
                   >
                     {(provided) => (
-                      <tr key={row.id} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                      <tr
+                        key={row.id}
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
                         {row.getVisibleCells().map((cell) => (
-                          <td key={`${row.id}_${cell.id}`}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                          <td key={`${row.id}_${cell.id}`}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
                         ))}
                       </tr>
                     )}

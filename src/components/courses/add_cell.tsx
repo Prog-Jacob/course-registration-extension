@@ -22,7 +22,11 @@ export function AddCell({ table }: { table: Table<Course> }) {
 
   return (
     <>
-      <IconButton disabled={isButtonDisabled()} onClick={toggleTable} sx={{ margin: 0, padding: 0, height: 25 }}>
+      <IconButton
+        disabled={isButtonDisabled()}
+        onClick={toggleTable}
+        sx={{ margin: 0, padding: 0, height: 25 }}
+      >
         <IoIosAddCircle color='var(--primary)' size={25} />
       </IconButton>
       <div id='add-course'></div>

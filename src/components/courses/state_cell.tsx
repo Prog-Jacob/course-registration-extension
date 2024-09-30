@@ -60,7 +60,14 @@ export const StateCell = ({ table, row }: { table: Table<Course>; row: Row<Cours
           }}
           onClick={toggleSchedule}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-evenly', gap: 5 }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-evenly',
+              gap: 5,
+            }}
+          >
             {curr == 0 ? (
               <FontAwesomeIcon icon={faCircleCheck} style={{ fontSize: 16, color: 'green' }} />
             ) : curr == 1000 ? (

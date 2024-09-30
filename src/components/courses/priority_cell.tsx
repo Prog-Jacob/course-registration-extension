@@ -44,7 +44,10 @@ export const PriorityCell = ({ table }: { table: Table<Course> }) => {
           </button>
         </div>
       ) : (
-        <FormControl disabled={Object.values(meta.editedRows).some((v) => v)} sx={{ width: '100%', height: 26 }}>
+        <FormControl
+          disabled={Object.values(meta.editedRows).some((v) => v)}
+          sx={{ width: '100%', height: 26 }}
+        >
           <Select
             sx={{
               width: '50%',
@@ -72,7 +75,11 @@ export const PriorityCell = ({ table }: { table: Table<Course> }) => {
             inputProps={{ 'aria-label': 'Without label' }}
           >
             {selectItems.map((item, i) => (
-              <MenuItem key={`item_${i}`} sx={{ display: item.value == -1 ? 'none' : '' }} value={item.value}>
+              <MenuItem
+                key={`item_${i}`}
+                sx={{ display: item.value == -1 ? 'none' : '' }}
+                value={item.value}
+              >
                 {item.label}
               </MenuItem>
             ))}

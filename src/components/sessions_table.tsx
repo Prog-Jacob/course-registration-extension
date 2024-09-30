@@ -34,10 +34,17 @@ export const SessionTable = ({ courses }: { courses: Course[] }) => {
             return (
               <tr key={`${idx}`}>
                 {table.map(([header, id]) => (
-                  <td key={`${idx}_${id}`} {...(id == 'code' ? { className: 'tooltip', 'data-text': course.name } : {})}>
+                  <td
+                    key={`${idx}_${id}`}
+                    {...(id == 'code' ? { className: 'tooltip', 'data-text': course.name } : {})}
+                  >
                     {(() => {
-                      const component = id.split('.').reduce((obj, key) => obj[+key >= 0 ? +key : key], course) ?? '';
-                      return header == 'Group' || header == 'Section' ? (component || []).join('&') : component;
+                      const component =
+                        id.split('.').reduce((obj, key) => obj[+key >= 0 ? +key : key], course) ??
+                        '';
+                      return header == 'Group' || header == 'Section'
+                        ? (component || []).join('&')
+                        : component;
                     })()}
                   </td>
                 ))}

@@ -1,12 +1,17 @@
 import { sortByLSOne } from './LSone';
 
-export default function candidateCourses(courseValue: number[], minValue: number, maxValue: number): number[][] {
+export default function candidateCourses(
+  courseValue: number[],
+  minValue: number,
+  maxValue: number
+): number[][] {
   const n = courseValue.length;
   const memo: Set<number>[][] = [];
   for (let i = 0; i < n; i++) memo.push([]);
 
   const answer: number[][] = [];
-  for (let value = minValue; value <= maxValue; value++) answer.push(cadidateCoursesPerCredit(courseValue, value));
+  for (let value = minValue; value <= maxValue; value++)
+    answer.push(cadidateCoursesPerCredit(courseValue, value));
 
   return answer;
 

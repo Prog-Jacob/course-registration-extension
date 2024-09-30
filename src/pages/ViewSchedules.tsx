@@ -32,13 +32,13 @@ function ViewSchedules() {
       } catch (e) {
         return (e as Error).message;
       }
-    })(),
+    })()
   );
   const referenceCourses = useRef<Course[][]>(
     (() => {
       if (schedules.current instanceof Scheduler) return schedules.current.getCourses();
       return null;
-    })(),
+    })()
   );
   const validSchedules = useRef<Course[][]>();
   const componentRef = useRef();
@@ -146,7 +146,9 @@ function ViewSchedules() {
                   sx={{
                     width: '50%',
                     '.MuiSlider-root': { color: 'var(--secondary) !important' },
-                    '.MuiSlider-thumb:hover': { boxShadow: '0 0 0 6px rgba(var(--secondary-rgb), .2) !important' },
+                    '.MuiSlider-thumb:hover': {
+                      boxShadow: '0 0 0 6px rgba(var(--secondary-rgb), .2) !important',
+                    },
                     '.MuiSlider-thumb': { boxShadow: 'none !important' },
                   }}
                 >

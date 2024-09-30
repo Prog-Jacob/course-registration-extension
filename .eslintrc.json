@@ -3,12 +3,20 @@
     "browser": true,
     "es2021": true
   },
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:react/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint", "react"],
-  "rules": { "no-constant-condition": 1, "react/no-unescaped-entities": 1, "@typescript-eslint/no-non-null-assertion": 1 }
+  "rules": {
+    "no-constant-condition": 1,
+    "react/no-unescaped-entities": 1,
+    "@typescript-eslint/no-non-null-assertion": 1
+  }
 }

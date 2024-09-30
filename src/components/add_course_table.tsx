@@ -32,7 +32,7 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
       priority: 999,
       sessions: [],
       options: {},
-    }),
+    })
   );
   const [courseId, setCourseId] = useState('');
 
@@ -64,10 +64,17 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
       session.dates = session.dates.filter((date) => date != undefined);
     });
     copyCourse.sessions = copyCourse.sessions.filter(
-      (session) => session.section.length > 0 || session.group.length > 0 || session.dates.length > 0,
+      (session) =>
+        session.section.length > 0 || session.group.length > 0 || session.dates.length > 0
     );
     if (copyCourse.code && copyCourse.name && copyCourse.credits && copyCourse.sessions.length) {
-      setData((old) => flatten([...old.filter((c) => c.code !== courseId), copyCourse].sort((a, b) => a.priority - b.priority)));
+      setData((old) =>
+        flatten(
+          [...old.filter((c) => c.code !== courseId), copyCourse].sort(
+            (a, b) => a.priority - b.priority
+          )
+        )
+      );
       closeWindow();
     } else {
       const alert = document.getElementById('SubmitCourseAlert');
@@ -107,7 +114,11 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
         Insert at least one session by adding a section, a group, or a date!
       </Alert>
 
-      <Button onClick={closeWindow} sx={{ margin: '.5rem', backgroundColor: 'red !important' }} variant='contained'>
+      <Button
+        onClick={closeWindow}
+        sx={{ margin: '.5rem', backgroundColor: 'red !important' }}
+        variant='contained'
+      >
         Cancel
       </Button>
       <table id='add-course-table'>
@@ -133,14 +144,18 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
                     course.current[id] = +value > 0 ? +value : value.toUpperCase();
                     if (id == 'code') {
                       setData((courses) => {
-                        const alreadyExistentCourse = courses.find((oldCourse) => oldCourse.code === course.current[id]);
+                        const alreadyExistentCourse = courses.find(
+                          (oldCourse) => oldCourse.code === course.current[id]
+                        );
                         if (alreadyExistentCourse) {
                           clearSessions();
                           course.current = JSON.parse(JSON.stringify(alreadyExistentCourse));
 
                           for (let i = 0; i < course.current.sessions.length; i++) {
                             const dates = Array(40);
-                            course.current.sessions[rowIdx.current].dates.forEach((date) => (dates[date] = date));
+                            course.current.sessions[rowIdx.current].dates.forEach(
+                              (date) => (dates[date] = date)
+                            );
                             course.current.sessions[rowIdx.current].dates = dates;
                             insertSession();
                           }
@@ -162,11 +177,27 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
           </tr>
         </tbody>
       </table>
-      <div style={{ display: 'flex', width: '500px', alignItems: 'center', justifyContent: 'space-around', margin: '.5rem 0' }}>
-        <Button onClick={insertSession} sx={{ backgroundColor: 'var(--secondary) !important' }} variant='contained'>
+      <div
+        style={{
+          display: 'flex',
+          width: '500px',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          margin: '.5rem 0',
+        }}
+      >
+        <Button
+          onClick={insertSession}
+          sx={{ backgroundColor: 'var(--secondary) !important' }}
+          variant='contained'
+        >
           Add session
         </Button>
-        <Button onClick={submitCourse} sx={{ backgroundColor: 'var(--secondary) !important' }} variant='contained'>
+        <Button
+          onClick={submitCourse}
+          sx={{ backgroundColor: 'var(--secondary) !important' }}
+          variant='contained'
+        >
           Submit Course
         </Button>
       </div>
@@ -219,7 +250,10 @@ const CreateRow = ({
             />
           ) : (
             <div>
-              <div className='popup popup-schedule' style={{ zIndex: 200, display: showSchedule ? '' : 'none' }}>
+              <div
+                className='popup popup-schedule'
+                style={{ zIndex: 200, display: showSchedule ? '' : 'none' }}
+              >
                 <button className='popup-schedule-close' onClick={toggleSchedule}>
                   X
                 </button>

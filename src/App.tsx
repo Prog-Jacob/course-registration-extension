@@ -8,9 +8,25 @@ import React from 'react';
 
 function App() {
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'column' }}>
+    <div
+      style={{
+        display: 'flex',
+        minHeight: '100vh',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexDirection: 'column',
+      }}
+    >
       <Header />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <Router>
           <Routes>
             <Route index element={<Home />}></Route>

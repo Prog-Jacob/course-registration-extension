@@ -13,7 +13,7 @@ async function handleAsyncResponse(msg: DOMMessage): Promise<DOMResponse> {
 function messagesFromReactAppListener(
   msg: DOMMessage,
   sender: chrome.runtime.MessageSender,
-  sendResponse: (response: DOMResponse) => void,
+  sendResponse: (response: DOMResponse) => void
 ) {
   new Promise((resolve) => resolve(handleAsyncResponse(msg)))
     .then((response) => sendResponse(response as DOMResponse))
