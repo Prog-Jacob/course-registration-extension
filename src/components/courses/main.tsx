@@ -1,12 +1,13 @@
 import { DragDropContext, Draggable, DropResult, Droppable } from 'react-beautiful-dnd';
 import { flexRender, useReactTable, getCoreRowModel, Row } from '@tanstack/react-table';
-import { Dispatch, SetStateAction, useEffect, useState, RefObject } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState, RefObject, ChangeEvent } from 'react';
 import { modifyObject } from '../../modules/modify_nested_objects';
 import { CourseGroups } from '../../types/course';
 import { Course } from '../../types/course';
 import { hashToHex } from '../../modules/hash';
 import '../../styles/course_table.css';
 import { columns } from './columns';
+import { Box } from '@mui/material';
 import React from 'react';
 
 export const flatten = (sortedArr: Course[]) => {
@@ -68,6 +69,26 @@ export const Table = ({
     const update = reorder(source.index, destination.index);
     setData(update);
     setOriginalData(update);
+  };
+
+  const handleImport = async (e: ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = await e.target.files[0]?.text();
+      const data = JSON.parse(file);
+      setOriginalData(data);
+    } catch (error) {
+      alert('Error parsing JSON file!');
+    }
+  };
+
+  const handleExport = (e) => {
+    try {
+      const json = JSON.stringify(originalData, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      e.target.href = URL.createObjectURL(blob);
+    } catch (error) {
+      alert(`Error exporting file!`);
+    }
   };
 
   const isDragDisabled = (row: Row<Course>) => {
@@ -166,43 +187,54 @@ export const Table = ({
   });
 
   return (
-    <table className='course-table'>
-      <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId={'dndTableBody'}>
-          {(provided) => (
-            <tbody className='course-table-body' ref={provided.innerRef} {...provided.droppableProps}>
-              {table.getRowModel().rows.map((row, index) => (
-                <Draggable
-                  draggableId={`${row.original.code}_${row.id}`}
-                  key={`${row.original.code}_${row.id}`}
-                  isDragDisabled={isDragDisabled(row)}
-                  index={index}
-                >
-                  {(provided) => (
-                    <tr key={row.id} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                      {row.getVisibleCells().map((cell) => (
-                        <td key={`${row.id}_${cell.id}`}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-                      ))}
-                    </tr>
-                  )}
-                </Draggable>
+    <Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: '1rem' }}>
+        <label className='form-submit' htmlFor='import-courses'>
+          Import
+        </label>
+        <input id='import-courses' type='file' accept='.json' style={{ display: 'none' }} onChange={handleImport} />
+        <a className='form-submit' download='courses.json' onClick={handleExport} style={{ textDecoration: 'none' }}>
+          Export
+        </a>
+      </Box>
+      <table className='course-table'>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</th>
               ))}
+            </tr>
+          ))}
+        </thead>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId={'dndTableBody'}>
+            {(provided) => (
+              <tbody className='course-table-body' ref={provided.innerRef} {...provided.droppableProps}>
+                {table.getRowModel().rows.map((row, index) => (
+                  <Draggable
+                    draggableId={`${row.original.code}_${row.id}`}
+                    key={`${row.original.code}_${row.id}`}
+                    isDragDisabled={isDragDisabled(row)}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <tr key={row.id} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                        {row.getVisibleCells().map((cell) => (
+                          <td key={`${row.id}_${cell.id}`}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                        ))}
+                      </tr>
+                    )}
+                  </Draggable>
+                ))}
 
-              {provided.placeholder}
-            </tbody>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </table>
+                {provided.placeholder}
+              </tbody>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </table>
+    </Box>
   );
 };
 
