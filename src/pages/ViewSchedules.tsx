@@ -33,25 +33,26 @@ function ViewSchedules() {
       }
     })()
   );
-  const componentRef = useRef();
+  const componentRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     getSolution();
   }, []);
 
-  const getSolution = () => {
+  const getSolution = async () => {
     setSolutions(undefined);
-    setSolutions(() => {
+    const solutions = (async () => {
       if (typeof schedules.current != 'string') {
         try {
-          return schedules.current.getSolutions();
+          return await schedules.current.getSolutions();
         } catch (e: unknown) {
           return (e as Error).message;
         }
       }
       return schedules.current;
-    });
+    })();
+    setSolutions(await solutions);
   };
 
   const backToCourses = () => {

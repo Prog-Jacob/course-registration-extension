@@ -20,6 +20,12 @@
       "js": ["./static/js/content.js"]
     }
   ],
+  "web_accessible_resources": [
+    {
+      "resources": ["./static/js/workers/*"],
+      "use_dynamic_url": true
+    }
+  ],
   "browser_specific_settings": {
     "gecko": {
       "id": "{ce4dd9b9-cf55-4865-bf73-4c44dac9c2da}",

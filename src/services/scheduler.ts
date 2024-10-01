@@ -1,13 +1,19 @@
 import { Course, Option, ScheduleOptions, ScheduleProperties } from '../types/course';
 import { Combination, Schedule, UnpackedSolution } from '../types/combination';
-import candidateCourses from '../modules/candidate_courses';
 import { CourseGroups } from '../types/course';
 import { Trie } from './prefix_tree';
 
+const generateCombinations = new Worker(
+  chrome.runtime.getURL('./static/js/workers/generateCombinations.js')
+);
+const candidateCourses = new Worker(
+  chrome.runtime.getURL('./static/js/workers/candidateCourses.js')
+);
+
 export default class Scheduler {
   // Combinations
+  private candidateCombinations: Promise<number[][]>;
   private validCombinations: Combination[][];
-  private candidateCombinations: number[][];
   private increment: number;
   private rangePtr: number;
 
@@ -50,7 +56,18 @@ export default class Scheduler {
     for (let i = 0; i <= this.max; i++) this.schedules.push([]);
     for (let i = 0; i <= this.max; i++) this.validCombinations.push([]);
 
+    generateCombinations.postMessage({ message: 'init' });
+    generateCombinations.postMessage({
+      message: 'add',
+      data: {
+        baseSchedules: this.baseSchedules,
+        courses: this.courses,
+        groups,
+      },
+    });
+
     if (this.courses[0][0].priority == 0) {
+      generateCombinations.postMessage({ message: 'generate', data: { mask: 1 } });
       const mustIncludeCombination = this.generateCombinations(1);
       this.baseSchedules = mustIncludeCombination.schedules;
       this.mustIncludeCost = courseValue[0];
@@ -66,7 +83,19 @@ export default class Scheduler {
       if (this.min == 0) this.validCombinations[this.mustIncludeCost].push(mustIncludeCombination);
     }
 
-    this.candidateCombinations = candidateCourses(courseValue, this.min, this.max);
+    candidateCourses.postMessage({ courseValue, minValue: this.min, maxValue: this.max });
+    this.candidateCombinations = new Promise((resolve) => {
+      candidateCourses.addEventListener('message', (e: MessageEvent) => {
+        resolve(e.data);
+      });
+    });
+    generateCombinations.postMessage({
+      message: 'add',
+      data: {
+        baseSchedules: this.baseSchedules,
+      },
+    });
+
     this.rangePtr = options.preferMin ? this.min : this.max;
     this.increment = options.preferMin ? 1 : -1;
   }
@@ -140,10 +169,10 @@ export default class Scheduler {
     return solution;
   }
 
-  public getSolutions(): Course[][] {
+  public async getSolutions(): Promise<Course[][]> {
     if (this.rangePtr >= this.min && this.rangePtr <= this.max) {
       if (this.schedules[this.rangePtr].length) return this.schedules[this.rangePtr];
-      const combinations = this.getCombinations(this.getRange());
+      const combinations = await this.getCombinations(this.getRange());
       const solutions = combinations.flatMap((combination) =>
         combination.schedules.map(
           (schedule) => ({ schedule, courses: combination.courses }) as UnpackedSolution
@@ -157,15 +186,20 @@ export default class Scheduler {
     } else throw new Error('There are no more schedules.');
   }
 
-  private getCombinations(index: number): Combination[] {
+  private async getCombinations(index: number): Promise<Combination[]> {
     let mask;
-    while ((mask = this.candidateCombinations[this.rangePtr - this.min].pop())) {
-      const ans = this.generateCombinations(mask);
+    while ((mask = (await this.candidateCombinations)[this.rangePtr - this.min].pop())) {
+      generateCombinations.postMessage({ message: 'generate', data: { mask } });
+      const ans = (await new Promise((resolve) => {
+        generateCombinations.addEventListener('message', (e: MessageEvent) => {
+          resolve(e.data);
+        });
+      })) as Combination;
       if (ans.schedules.length) {
         this.validCombinations[index].push(ans);
       }
     }
-    return this.validCombinations[this.getRange()];
+    return this.validCombinations[index];
   }
 
   private generateCombinations(mask: number): Combination {

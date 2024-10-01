@@ -1,6 +1,15 @@
+const path = require('path');
+const glob = require('glob');
+
 module.exports = {
   webpack: {
     configure: (webpackConfig, { env, paths }) => {
+      const workerEntries = glob.sync('./src/workers/**/*.{js,ts}').reduce((acc, file) => {
+        const name = path.basename(file, path.extname(file));
+        acc[`workers/${name}`] = `./${file}`;
+        return acc;
+      }, {});
+
       return {
         ...webpackConfig,
         devtool: false,
@@ -8,6 +17,7 @@ module.exports = {
         entry: {
           main: [paths.appIndexJs].filter(Boolean),
           content: './src/chromeServices/DOMEvaluator.ts',
+          ...workerEntries,
         },
         output: {
           ...webpackConfig.output,
