@@ -1,7 +1,6 @@
-import sortSchedulesByFreeTime from '../modules/schedules_sorting';
-import { Combination, Schedule } from '../types/combination';
+import { Course, Option, ScheduleOptions, ScheduleProperties } from '../types/course';
+import { Combination, Schedule, UnpackedSolution } from '../types/combination';
 import candidateCourses from '../modules/candidate_courses';
-import { Course, ScheduleOptions } from '../types/course';
 import { CourseGroups } from '../types/course';
 import { Trie } from './prefix_tree';
 
@@ -11,7 +10,6 @@ export default class Scheduler {
   private candidateCombinations: number[][];
   private increment: number;
   private rangePtr: number;
-  private slidePtr: number;
 
   // Courses
   private mustIncludeCost: number;
@@ -21,16 +19,20 @@ export default class Scheduler {
 
   // Schedules
   private baseSchedules: Schedule[];
+  private schedules: Course[][][];
   private considerFull: boolean;
   private conflicts: Trie;
 
   // Groups
   private visitedGroups: { [key: string]: boolean };
+  private priorities: Option[];
   private groups: CourseGroups;
 
   constructor(courses: Course[][], options: ScheduleOptions, groups: CourseGroups) {
+    if (!courses?.length) throw new Error('You must provide at least one course!');
     this.baseSchedules = [{ sessions: [], dates: options.exclude_dates }];
     this.considerFull = options.considerDisabled ?? false;
+    this.priorities = options.priorities;
     this.min = options.minCredits;
     this.max = options.maxCredits;
     this.courses = [...courses];
@@ -43,7 +45,9 @@ export default class Scheduler {
     const courseValue = this.courses.map((courses) => {
       return courses.reduce((acc, course) => acc + course.credits, 0);
     });
+    this.schedules = [];
     this.validCombinations = [];
+    for (let i = 0; i <= this.max; i++) this.schedules.push([]);
     for (let i = 0; i <= this.max; i++) this.validCombinations.push([]);
 
     if (this.courses[0][0].priority == 0) {
@@ -51,8 +55,10 @@ export default class Scheduler {
       this.baseSchedules = mustIncludeCombination.schedules;
       this.mustIncludeCost = courseValue[0];
 
-      if (!this.baseSchedules.length) throw new Error('Schedule conflict in the Must Included Courses.');
-      if (this.mustIncludeCost > this.max) throw new Error('The Must Included Courses exceed the maximum credits.');
+      if (!this.baseSchedules.length)
+        throw new Error('Schedule conflict in the Must Included Courses.');
+      if (this.mustIncludeCost > this.max)
+        throw new Error('The Must Included Courses exceed the maximum credits.');
 
       this.min = Math.max(this.min - this.mustIncludeCost, 0);
       this.max -= this.mustIncludeCost;
@@ -63,55 +69,22 @@ export default class Scheduler {
     this.candidateCombinations = candidateCourses(courseValue, this.min, this.max);
     this.rangePtr = options.preferMin ? this.min : this.max;
     this.increment = options.preferMin ? 1 : -1;
-    this.slidePtr = 0;
   }
 
   public next() {
-    if (this.increment == 1) {
-      if (this.rangePtr > this.max) return;
-      if (this.rangePtr < this.min) {
-        this.rangePtr = this.min;
-        this.slidePtr = 0;
-        return;
-      }
-    } else {
-      if (this.rangePtr < this.min) return;
-      if (this.rangePtr > this.max) {
-        this.rangePtr = this.max;
-        this.slidePtr = 0;
-        return;
-      }
-    }
-    this.slidePtr++;
+    this.rangePtr += this.increment;
+    this.rangePtr = Math.max(this.rangePtr, this.min - 1);
+    this.rangePtr = Math.min(this.rangePtr, this.max + 1);
   }
 
   public prev() {
-    if (this.increment == 1) {
-      if (this.rangePtr < this.min) return;
-      if (this.rangePtr > this.max) {
-        this.rangePtr = this.max;
-        this.slidePtr = this.validCombinations[this.getRange()].length;
-      }
-    } else {
-      if (this.rangePtr > this.max) return;
-      if (this.rangePtr < this.min) {
-        this.rangePtr = this.min;
-        this.slidePtr = this.validCombinations[this.getRange()].length;
-      }
-    }
-
-    while (this.slidePtr == 0) {
-      this.rangePtr -= this.increment;
-      if (this.rangePtr > this.max || this.rangePtr < this.min) return;
-      this.slidePtr = this.validCombinations[this.getRange()].length;
-    }
-
-    this.slidePtr--;
+    this.rangePtr -= this.increment;
+    this.rangePtr = Math.max(this.rangePtr, this.min - 1);
+    this.rangePtr = Math.min(this.rangePtr, this.max + 1);
   }
 
   public setRange(value: number) {
     this.rangePtr = value - this.mustIncludeCost;
-    this.slidePtr = 0;
   }
 
   public getRange(): number {
@@ -131,37 +104,68 @@ export default class Scheduler {
         sessions: course.sessions.filter((session) => {
           return (
             (this.considerFull || !session.isFull) &&
-            (!course.options.group || session.group.length == 0 || session.group.includes(course.options.group)) &&
-            (!course.options.section || session.section.length == 0 || session.section.includes(course.options.section))
+            (!course.options.group ||
+              session.group.length == 0 ||
+              session.group.includes(course.options.group)) &&
+            (!course.options.section ||
+              session.section.length == 0 ||
+              session.section.includes(course.options.section))
           );
         }),
       }));
     });
   }
 
-  public getCombinations(): Combination {
-    while (this.rangePtr >= this.min && this.rangePtr <= this.max) {
-      const ans =
-        this.validCombinations[this.getRange()][this.slidePtr] ??
-        (() => {
-          const mask = this.candidateCombinations[this.rangePtr - this.min].pop();
+  private unpackSolution({ courses, schedule }: UnpackedSolution): Course[] {
+    let i = 0,
+      j = 0;
+    let mask = courses;
+    const solution: Course[] = [];
 
-          if (mask) {
-            const ans = this.generateCombinations(mask);
-            if (ans.schedules.length) {
-              this.slidePtr = this.validCombinations[this.getRange()].length;
-              this.validCombinations[this.getRange()].push(ans);
-              return ans;
-            }
-            return;
-          }
-
-          this.rangePtr += this.increment;
-          this.slidePtr = 0;
-        })();
-      if (ans) return ans;
+    while (mask) {
+      if ((mask & 1) == 1) {
+        for (const course of this.getCourses()[i]) {
+          const session = course.sessions[schedule.sessions[j]];
+          solution.push({
+            ...course,
+            sessions: [session],
+          });
+          j++;
+        }
+      }
+      i++;
+      mask >>= 1;
     }
-    throw new Error('There are no more schedules.');
+
+    return solution;
+  }
+
+  public getSolutions(): Course[][] {
+    if (this.rangePtr >= this.min && this.rangePtr <= this.max) {
+      if (this.schedules[this.rangePtr].length) return this.schedules[this.rangePtr];
+      const combinations = this.getCombinations(this.getRange());
+      const solutions = combinations.flatMap((combination) =>
+        combination.schedules.map(
+          (schedule) => ({ schedule, courses: combination.courses }) as UnpackedSolution
+        )
+      );
+      this.schedules[this.rangePtr] = this.sortSolutions(solutions).map((solution) =>
+        this.unpackSolution(solution)
+      );
+      if (this.schedules[this.rangePtr].length) return this.schedules[this.rangePtr];
+      else throw new Error(`You can't register ${this.getRange()}CHs.`);
+    } else throw new Error('There are no more schedules.');
+  }
+
+  private getCombinations(index: number): Combination[] {
+    let mask;
+    while ((mask = this.candidateCombinations[this.rangePtr - this.min].pop())) {
+      const ans = this.generateCombinations(mask);
+      if (ans.schedules.length) {
+        this.validCombinations[index].push(ans);
+      }
+    }
+    return this.validCombinations[this.getRange()];
   }
 
   private generateCombinations(mask: number): Combination {
@@ -170,7 +174,8 @@ export default class Scheduler {
     const copyMask = mask;
     let i = 0;
 
-    if (this.conflicts.inverseStartsWIth(mask.toString(2).split('').reverse().join(''))) return { ...ans, schedules: [] };
+    if (this.conflicts.inverseStartsWIth(mask.toString(2).split('').reverse().join('')))
+      return { ...ans, schedules: [] };
 
     while (mask) {
       if ((mask & 1) == 0) {
@@ -185,7 +190,9 @@ export default class Scheduler {
         const group = this.groups[course.code];
 
         if (n == 0 || visitedGroups[group]) {
-          this.conflicts.insert((copyMask & ((1 << ++i) - 1)).toString(2).split('').reverse().join(''));
+          this.conflicts.insert(
+            (copyMask & ((1 << ++i) - 1)).toString(2).split('').reverse().join('')
+          );
           return { ...ans, schedules: [] };
         }
         if (group) visitedGroups[group] = true;
@@ -202,11 +209,12 @@ export default class Scheduler {
         }
 
         if (!nextSchedules.length) {
-          this.conflicts.insert((copyMask & ((1 << ++i) - 1)).toString(2).split('').reverse().join(''));
+          this.conflicts.insert(
+            (copyMask & ((1 << ++i) - 1)).toString(2).split('').reverse().join('')
+          );
           return { ...ans, schedules: [] };
         }
-
-        ans.schedules = sortSchedulesByFreeTime(nextSchedules);
+        ans.schedules = nextSchedules;
       }
 
       mask >>= 1;
@@ -218,5 +226,92 @@ export default class Scheduler {
       ans.courses |= 1;
     }
     return ans;
+  }
+
+  private sortSolutions(solutions: UnpackedSolution[]): UnpackedSolution[] {
+    return solutions.sort((a, b) => {
+      const schedule1 = this.getScheduleProperties(a.schedule);
+      const schedule2 = this.getScheduleProperties(b.schedule);
+      for (const { id, reverse } of this.priorities) {
+        const val = this[id](schedule1, schedule2) * (reverse ? -1 : 1);
+        if (val !== 0) return val;
+      }
+      return 0;
+    });
+  }
+
+  private getScheduleProperties(schedule: Schedule): ScheduleProperties {
+    let startOfTheWeek = 0;
+    let endOfTheWeek = 4;
+    let totalFreeDays = 0;
+    let totalEarlySessions = 0;
+    let totalLateSessions = 0;
+
+    while (
+      startOfTheWeek <= endOfTheWeek &&
+      !schedule.dates.slice(startOfTheWeek * 8, (startOfTheWeek + 1) * 8).some(Boolean)
+    ) {
+      startOfTheWeek++;
+    }
+    while (
+      startOfTheWeek <= endOfTheWeek &&
+      !schedule.dates.slice(endOfTheWeek * 8, (endOfTheWeek + 1) * 8).some(Boolean)
+    ) {
+      endOfTheWeek--;
+    }
+
+    totalFreeDays = 5 - (endOfTheWeek - startOfTheWeek + 1);
+
+    for (let day = startOfTheWeek; day <= endOfTheWeek; day++) {
+      if (schedule.dates.slice(day * 8, (day + 1) * 8).some(Boolean)) {
+        let early = 0;
+        let late = 7;
+
+        while (early <= late && !schedule.dates[day * 8 + early]) {
+          ++totalEarlySessions;
+          ++early;
+        }
+        while (early <= late && !schedule.dates[day * 8 + late]) {
+          ++totalLateSessions;
+          --late;
+        }
+      } else {
+        ++totalFreeDays;
+      }
+    }
+
+    return {
+      startOfTheWeek,
+      endOfTheWeek,
+      totalFreeDays,
+      totalEarlySessions,
+      totalLateSessions,
+    };
+  }
+
+  private preferShortWeek(a: ScheduleProperties, b: ScheduleProperties): number {
+    const schedule1week = a.endOfTheWeek - a.startOfTheWeek;
+    const schedule2week = b.endOfTheWeek - b.startOfTheWeek;
+    return schedule1week - schedule2week;
+  }
+  private preferLessDays(a: ScheduleProperties, b: ScheduleProperties): number {
+    const schedule1freeDays = a.totalFreeDays;
+    const schedule2freeDays = b.totalFreeDays;
+    return schedule2freeDays - schedule1freeDays;
+  }
+  private preferShortDays(a: ScheduleProperties, b: ScheduleProperties): number {
+    const schedule1freeHours = a.totalEarlySessions + a.totalLateSessions;
+    const schedule2freeHours = b.totalEarlySessions + b.totalLateSessions;
+    return schedule2freeHours - schedule1freeHours;
+  }
+  private preferEarlySessions(a: ScheduleProperties, b: ScheduleProperties): number {
+    const schedule1freeHours = a.totalEarlySessions;
+    const schedule2freeHours = b.totalEarlySessions;
+    return schedule1freeHours - schedule2freeHours;
+  }
+  private preferLateSessions(a: ScheduleProperties, b: ScheduleProperties): number {
+    const schedule1freeHours = a.totalLateSessions;
+    const schedule2freeHours = b.totalLateSessions;
+    return schedule1freeHours - schedule2freeHours;
   }
 }

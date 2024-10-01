@@ -7,3 +7,8 @@ export type Combination = {
   courses: number;
   schedules: Schedule[];
 };
+
+export type UnpackedSolution = {
+  courses: number;
+  schedule: Schedule;
+};

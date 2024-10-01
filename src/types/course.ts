@@ -28,7 +28,7 @@ export interface Option {
   id:
     | 'preferShortWeek'
     | 'preferLessDays'
-    | 'preferShorterDays'
+    | 'preferShortDays'
     | 'preferEarlySessions'
     | 'preferLateSessions';
   reverse: boolean;

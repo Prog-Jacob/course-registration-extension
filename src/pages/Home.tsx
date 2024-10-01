@@ -16,14 +16,7 @@ function Home() {
       navigate('/courses');
     }
 
-    localStorage.setItem(
-      'state',
-      JSON.stringify({
-        courses,
-        options: { exclude_dates: new Array(40).fill(false), maxCredits: 20, minCredits: 14 },
-        retrievedCourseOptions: { group: 0, section: 0 },
-      }),
-    );
+    localStorage.setItem('state:courses', JSON.stringify(courses));
   };
 
   useEffect(() => {
@@ -65,7 +58,12 @@ function Home() {
           {
             <Button
               onClick={() => navigateToCourses([])}
-              sx={{ margin: '.5rem', backgroundColor: 'var(--secondary)', color: 'white', '&:hover': { color: 'inherit' } }}
+              sx={{
+                margin: '.5rem',
+                backgroundColor: 'var(--secondary)',
+                color: 'white',
+                '&:hover': { color: 'inherit' },
+              }}
             >
               Proceed Manually
             </Button>

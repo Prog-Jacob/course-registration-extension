@@ -5,7 +5,6 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { IoArrowBackCircle } from 'react-icons/io5';
 import Schedule from '../components/schedule/main';
-import { Combination } from '../types/combination';
 import { useReactToPrint } from 'react-to-print';
 import { CourseGroups } from '../types/course';
 import { AiFillPrinter } from 'react-icons/ai';
@@ -24,7 +23,7 @@ function ViewSchedules() {
   } = history.state.usr ?? {};
   if (!courses || !options || !groups) return <Navigate to='/courses' />;
 
-  const [solution, setSolution] = useState<Combination | string>();
+  const [solutions, setSolutions] = useState<Course[][] | string>();
   const schedules = useRef<Scheduler | string>(
     (() => {
       try {
@@ -34,13 +33,6 @@ function ViewSchedules() {
       }
     })()
   );
-  const referenceCourses = useRef<Course[][]>(
-    (() => {
-      if (schedules.current instanceof Scheduler) return schedules.current.getCourses();
-      return null;
-    })()
-  );
-  const validSchedules = useRef<Course[][]>();
   const componentRef = useRef();
   const navigate = useNavigate();
 
@@ -49,46 +41,17 @@ function ViewSchedules() {
   }, []);
 
   const getSolution = () => {
-    setSolution(undefined);
-    setSolution(() => {
+    setSolutions(undefined);
+    setSolutions(() => {
       if (typeof schedules.current != 'string') {
         try {
-          unpackSolution(schedules.current.getCombinations());
-          return schedules.current.getCombinations();
+          return schedules.current.getSolutions();
         } catch (e: unknown) {
           return (e as Error).message;
         }
       }
       return schedules.current;
     });
-  };
-
-  const unpackSolution = ({ courses, schedules }: Combination) => {
-    validSchedules.current = [];
-
-    for (const schedule of schedules) {
-      let i = 0,
-        j = 0;
-      let mask = courses;
-      const solution = [];
-
-      while (mask) {
-        if ((mask & 1) == 1) {
-          for (const course of referenceCourses.current![i]) {
-            const session = course.sessions[schedule.sessions[j]];
-            solution.push({
-              ...course,
-              sessions: [session],
-            });
-            j++;
-          }
-        }
-        i++;
-        mask >>= 1;
-      }
-
-      validSchedules.current.push(solution);
-    }
   };
 
   const backToCourses = () => {
@@ -103,7 +66,7 @@ function ViewSchedules() {
 
   return (
     <>
-      {!solution ? (
+      {!solutions ? (
         <p style={{ textAlign: 'center' }}>Loading...</p>
       ) : (
         <div style={{ flex: 1 }}>
@@ -181,9 +144,9 @@ function ViewSchedules() {
                   Next
                 </Button>
               </div>
-              {typeof solution == 'string' ? (
+              {typeof solutions == 'string' ? (
                 <Alert sx={{ width: 520 }} severity='info'>
-                  {solution}
+                  {solutions}
                 </Alert>
               ) : (
                 <>
@@ -196,7 +159,7 @@ function ViewSchedules() {
                     Print
                   </Button>
                   <div ref={componentRef}>
-                    {validSchedules.current?.map((courses, idx) => (
+                    {solutions.map((courses, idx) => (
                       <div key={idx} style={{ margin: '1rem 0' }}>
                         <Schedule
                           key={`schedule_${idx}`}
