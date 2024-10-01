@@ -1,13 +1,16 @@
 import { Course, Option, ScheduleOptions, ScheduleProperties } from '../types/course';
 import { Combination, Schedule, UnpackedSolution } from '../types/combination';
-import candidateCourses from '../modules/candidate_courses';
 import { CourseGroups } from '../types/course';
 import { Trie } from './prefix_tree';
 
+const candidateCourses = new Worker(
+  chrome.runtime.getURL('./static/js/workers/candidateCourses.js')
+);
+
 export default class Scheduler {
   // Combinations
+  private candidateCombinations: Promise<number[][]>;
   private validCombinations: Combination[][];
-  private candidateCombinations: number[][];
   private increment: number;
   private rangePtr: number;
 
@@ -66,7 +69,12 @@ export default class Scheduler {
       if (this.min == 0) this.validCombinations[this.mustIncludeCost].push(mustIncludeCombination);
     }
 
-    this.candidateCombinations = candidateCourses(courseValue, this.min, this.max);
+    candidateCourses.postMessage({ courseValue, minValue: this.min, maxValue: this.max });
+    this.candidateCombinations = new Promise((resolve) => {
+      candidateCourses.addEventListener('message', (e: MessageEvent) => {
+        resolve(e.data);
+      });
+    });
     this.rangePtr = options.preferMin ? this.min : this.max;
     this.increment = options.preferMin ? 1 : -1;
   }
@@ -140,10 +148,10 @@ export default class Scheduler {
     return solution;
   }
 
-  public getSolutions(): Course[][] {
+  public async getSolutions(): Promise<Course[][]> {
     if (this.rangePtr >= this.min && this.rangePtr <= this.max) {
       if (this.schedules[this.rangePtr].length) return this.schedules[this.rangePtr];
-      const combinations = this.getCombinations(this.getRange());
+      const combinations = await this.getCombinations(this.getRange());
       const solutions = combinations.flatMap((combination) =>
         combination.schedules.map(
           (schedule) => ({ schedule, courses: combination.courses }) as UnpackedSolution
@@ -157,15 +165,15 @@ export default class Scheduler {
     } else throw new Error('There are no more schedules.');
   }
 
-  private getCombinations(index: number): Combination[] {
+  private async getCombinations(index: number): Promise<Combination[]> {
     let mask;
-    while ((mask = this.candidateCombinations[this.rangePtr - this.min].pop())) {
+    while ((mask = (await this.candidateCombinations)[this.rangePtr - this.min].pop())) {
       const ans = this.generateCombinations(mask);
       if (ans.schedules.length) {
         this.validCombinations[index].push(ans);
       }
     }
-    return this.validCombinations[this.getRange()];
+    return this.validCombinations[index];
   }
 
   private generateCombinations(mask: number): Combination {

@@ -1,21 +1,22 @@
-import { sortByLSOne } from './LSone';
+import { sortByLSOne } from '../modules/LSone';
 
-export default function candidateCourses(
-  courseValue: number[],
-  minValue: number,
-  maxValue: number
-): number[][] {
+self.addEventListener('message', function (e: MessageEvent) {
+  const { courseValue, minValue, maxValue } = e.data;
+  self.postMessage(candidateCourses(courseValue, minValue, maxValue));
+});
+
+function candidateCourses(courseValue: number[], minValue: number, maxValue: number): number[][] {
   const n = courseValue.length;
   const memo: Set<number>[][] = [];
   for (let i = 0; i < n; i++) memo.push([]);
 
   const answer: number[][] = [];
   for (let value = minValue; value <= maxValue; value++)
-    answer.push(cadidateCoursesPerCredit(courseValue, value));
+    answer.push(candidateCoursesPerCredit(courseValue, value));
 
   return answer;
 
-  function cadidateCoursesPerCredit(courseValue: number[], value: number): number[] {
+  function candidateCoursesPerCredit(courseValue: number[], value: number): number[] {
     return sortByLSOne(Array.from(dp(0, value)));
 
     function dp(i: number, target: number): Set<number> {
