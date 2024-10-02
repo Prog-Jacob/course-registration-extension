@@ -24,6 +24,8 @@ function ViewSchedules() {
   if (!courses || !options || !groups) return <Navigate to='/courses' />;
 
   const [solutions, setSolutions] = useState<Course[][] | string>();
+  const [page, setPage] = useState(1);
+
   const schedules = useRef<Scheduler | string>(
     (() => {
       try {
@@ -151,16 +153,26 @@ function ViewSchedules() {
                 </Alert>
               ) : (
                 <>
-                  <Button
-                    sx={{ backgroundColor: 'red', float: 'right', marginBottom: '10px' }}
-                    endIcon={<AiFillPrinter />}
-                    onClick={handlePrint}
-                    variant='contained'
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <Button
+                      sx={{ backgroundColor: 'red', marginBottom: '10px' }}
+                      endIcon={<AiFillPrinter />}
+                      onClick={handlePrint}
+                      variant='contained'
+                    >
+                      Print
+                    </Button>
+                  </div>
+                  <div
+                    ref={componentRef}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      flexDirection: 'column',
+                    }}
                   >
-                    Print
-                  </Button>
-                  <div ref={componentRef}>
-                    {solutions.map((courses, idx) => (
+                    {solutions.slice(0, page * 10).map((courses, idx) => (
                       <div key={idx} style={{ margin: '1rem 0' }}>
                         <Schedule
                           key={`schedule_${idx}`}
@@ -178,6 +190,13 @@ function ViewSchedules() {
                       </div>
                     ))}
                   </div>
+                  {page * 10 < solutions.length && (
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      <button className='form-submit' onClick={() => setPage((p) => p + 1)}>
+                        Load More
+                      </button>
+                    </div>
+                  )}
                 </>
               )}
             </>

@@ -57,15 +57,15 @@ export default class Scheduler {
       const mustIncludeCombination = this.generateCombinations(1);
       this.baseSchedules = mustIncludeCombination.schedules;
       this.mustIncludeCost = courseValue[0];
+      courseValue[0] = 1000;
 
       if (!this.baseSchedules.length)
         throw new Error('Schedule conflict in the Must Included Courses.');
       if (this.mustIncludeCost > this.max)
         throw new Error('The Must Included Courses exceed the maximum credits.');
 
-      this.min = Math.max(this.min - this.mustIncludeCost, 0);
       this.max -= this.mustIncludeCost;
-      courseValue[0] = 0;
+      this.min = Math.max(this.min - this.mustIncludeCost, 0);
       if (this.min == 0) this.validCombinations[this.mustIncludeCost].push(mustIncludeCombination);
     }
 
