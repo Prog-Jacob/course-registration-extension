@@ -27,6 +27,7 @@ export default class Scheduler {
   private baseSchedules: Schedule[];
   private schedules: Course[][][];
   private considerFull: boolean;
+  private preferMin: boolean;
   private conflicts: Trie;
 
   // Groups
@@ -39,22 +40,20 @@ export default class Scheduler {
     this.baseSchedules = [{ sessions: [], dates: options.exclude_dates }];
     this.considerFull = options.considerDisabled ?? false;
     this.priorities = options.priorities;
+    this.preferMin = options.preferMin;
     this.min = options.minCredits;
     this.max = options.maxCredits;
     this.courses = [...courses];
     this.conflicts = new Trie();
+    this.validCombinations = [];
     this.mustIncludeCost = 0;
     this.visitedGroups = {};
     this.groups = groups;
+    this.schedules = [];
     this.filterCourses();
 
-    const courseValue = this.courses.map((courses) => {
-      return courses.reduce((acc, course) => acc + course.credits, 0);
-    });
-    this.schedules = [];
-    this.validCombinations = [];
-    for (let i = 0; i <= this.max; i++) this.schedules.push([]);
     for (let i = 0; i <= this.max; i++) this.validCombinations.push([]);
+    for (let i = 0; i <= this.max; i++) this.schedules.push([]);
 
     generateCombinations.postMessage({ message: 'init' });
     generateCombinations.postMessage({
@@ -65,11 +64,21 @@ export default class Scheduler {
         groups,
       },
     });
+  }
+
+  async init() {
+    const courseValue = this.courses.map((courses) => {
+      return courses.reduce((acc, course) => acc + course.credits, 0);
+    });
 
     if (this.courses[0][0].priority == 0) {
       generateCombinations.postMessage({ message: 'generate', data: { mask: 1 } });
-      const mustIncludeCombination = this.generateCombinations(1);
-      this.baseSchedules = mustIncludeCombination.schedules;
+      const mustIncludeCombination: Promise<Combination> = new Promise((resolve) => {
+        generateCombinations.addEventListener('message', (e: MessageEvent) => {
+          resolve(e.data);
+        });
+      });
+      this.baseSchedules = (await mustIncludeCombination).schedules;
       this.mustIncludeCost = courseValue[0];
       courseValue[0] = 1000;
 
@@ -80,7 +89,8 @@ export default class Scheduler {
 
       this.max -= this.mustIncludeCost;
       this.min = Math.max(this.min - this.mustIncludeCost, 0);
-      if (this.min == 0) this.validCombinations[this.mustIncludeCost].push(mustIncludeCombination);
+      if (this.min == 0)
+        this.validCombinations[this.mustIncludeCost].push(await mustIncludeCombination);
     }
 
     candidateCourses.postMessage({ courseValue, minValue: this.min, maxValue: this.max });
@@ -96,8 +106,8 @@ export default class Scheduler {
       },
     });
 
-    this.rangePtr = options.preferMin ? this.min : this.max;
-    this.increment = options.preferMin ? 1 : -1;
+    this.rangePtr = this.preferMin ? this.min : this.max;
+    this.increment = this.preferMin ? 1 : -1;
   }
 
   public next() {
@@ -200,66 +210,6 @@ export default class Scheduler {
       }
     }
     return this.validCombinations[index];
-  }
-
-  private generateCombinations(mask: number): Combination {
-    const ans: Combination = { courses: mask, schedules: this.baseSchedules.slice() };
-    const visitedGroups = { ...this.visitedGroups };
-    const copyMask = mask;
-    let i = 0;
-
-    if (this.conflicts.inverseStartsWIth(mask.toString(2).split('').reverse().join('')))
-      return { ...ans, schedules: [] };
-
-    while (mask) {
-      if ((mask & 1) == 0) {
-        ++i;
-        mask >>= 1;
-        continue;
-      }
-
-      for (const course of this.courses[i]) {
-        const n = course.sessions.length;
-        const nextSchedules: Schedule[] = [];
-        const group = this.groups[course.code];
-
-        if (n == 0 || visitedGroups[group]) {
-          this.conflicts.insert(
-            (copyMask & ((1 << ++i) - 1)).toString(2).split('').reverse().join('')
-          );
-          return { ...ans, schedules: [] };
-        }
-        if (group) visitedGroups[group] = true;
-
-        for (let j = 0; j < n; j++) {
-          const session = course.sessions[j];
-          for (const schedule of ans.schedules) {
-            if (session.dates.some((date) => schedule.dates[date])) continue;
-
-            const newDates = schedule.dates.slice();
-            session.dates.forEach((date) => (newDates[date] = true));
-            nextSchedules.push({ sessions: [...schedule.sessions, j], dates: newDates });
-          }
-        }
-
-        if (!nextSchedules.length) {
-          this.conflicts.insert(
-            (copyMask & ((1 << ++i) - 1)).toString(2).split('').reverse().join('')
-          );
-          return { ...ans, schedules: [] };
-        }
-        ans.schedules = nextSchedules;
-      }
-
-      mask >>= 1;
-      ++i;
-    }
-
-    if (this.courses[0][0].priority == 0) {
-      if (ans.courses === 1) this.visitedGroups = { ...visitedGroups };
-      ans.courses |= 1;
-    }
-    return ans;
   }
 
   private sortSolutions(solutions: UnpackedSolution[]): UnpackedSolution[] {

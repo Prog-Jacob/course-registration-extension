@@ -24,35 +24,40 @@ function ViewSchedules() {
   if (!courses || !options || !groups) return <Navigate to='/courses' />;
 
   const [solutions, setSolutions] = useState<Course[][] | string>();
+  const [schedules, setSchedules] = useState<Scheduler | string>();
   const [page, setPage] = useState(1);
 
-  const schedules = useRef<Scheduler | string>(
-    (() => {
-      try {
-        return new Scheduler([...courses], { ...options }, { ...groups });
-      } catch (e) {
-        return (e as Error).message;
-      }
-    })()
-  );
   const componentRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    getSolution();
+    async function setScheduler() {
+      try {
+        const scheduler = new Scheduler([...courses], { ...options }, { ...groups });
+        await scheduler.init();
+        setSchedules(scheduler);
+      } catch (e) {
+        setSchedules((e as Error).message);
+      }
+    }
+    setScheduler();
   }, []);
+
+  useEffect(() => {
+    getSolution();
+  }, [schedules]);
 
   const getSolution = async () => {
     setSolutions(undefined);
     const solutions = (async () => {
-      if (typeof schedules.current != 'string') {
+      if (schedules instanceof Scheduler) {
         try {
-          return await schedules.current.getSolutions();
+          return await schedules.getSolutions();
         } catch (e: unknown) {
           return (e as Error).message;
         }
       }
-      return schedules.current;
+      return schedules;
     })();
     setSolutions(await solutions);
   };
@@ -81,9 +86,9 @@ function ViewSchedules() {
           >
             Back to courses
           </Button>
-          {typeof schedules.current == 'string' ? (
+          {typeof schedules == 'string' ? (
             <Alert sx={{ margin: '2rem 0', width: 520 }} severity='warning'>
-              {schedules.current}
+              {schedules}
             </Alert>
           ) : (
             <>
@@ -98,8 +103,8 @@ function ViewSchedules() {
               >
                 <Button
                   onClick={() => {
-                    if (schedules.current instanceof Scheduler) {
-                      schedules.current.prev();
+                    if (schedules instanceof Scheduler) {
+                      schedules.prev();
                       getSolution();
                     }
                   }}
@@ -123,12 +128,12 @@ function ViewSchedules() {
                     valueLabelDisplay='auto'
                     min={options.minCredits}
                     max={options.maxCredits}
-                    value={schedules.current.getRange()}
+                    value={schedules.getRange()}
                     getAriaValueText={(value) => `${value}CH`}
                     getAriaLabel={() => 'Current Credit Hours Schedules'}
                     onChange={(e) => {
-                      if (schedules.current instanceof Scheduler) {
-                        schedules.current.setRange(+(e.target as HTMLInputElement).value);
+                      if (schedules instanceof Scheduler) {
+                        schedules.setRange(+(e.target as HTMLInputElement).value);
                         getSolution();
                       }
                     }}
@@ -136,8 +141,8 @@ function ViewSchedules() {
                 </Box>
                 <Button
                   onClick={() => {
-                    if (schedules.current instanceof Scheduler) {
-                      schedules.current.next();
+                    if (schedules instanceof Scheduler) {
+                      schedules.next();
                       getSolution();
                     }
                   }}
