@@ -1,6 +1,13 @@
 import { DragDropContext, Draggable, DropResult, Droppable } from 'react-beautiful-dnd';
 import { flexRender, useReactTable, getCoreRowModel, Row } from '@tanstack/react-table';
-import { Dispatch, SetStateAction, useEffect, useState, RefObject, ChangeEvent } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+  ChangeEvent,
+  MutableRefObject,
+} from 'react';
 import { modifyObject } from '../../modules/modify_nested_objects';
 import { CourseGroups } from '../../types/course';
 import { Course } from '../../types/course';
@@ -30,7 +37,7 @@ export const Table = ({
 }: {
   originalData: Course[];
   setOriginalData: Dispatch<SetStateAction<Course[]>>;
-  groups: RefObject<CourseGroups>;
+  groups: MutableRefObject<CourseGroups>;
 }) => {
   const [editPriority, setEditPriority] = useState<number[]>([]);
   const [data, setData] = useState<Course[]>([...originalData]);
@@ -77,8 +84,13 @@ export const Table = ({
   const handleImport = async (e: ChangeEvent<HTMLInputElement>) => {
     try {
       const file = await e.target.files[0]?.text();
-      const data = JSON.parse(file);
-      setOriginalData(data);
+      const { courses, groups: importedGroups } = JSON.parse(file);
+      groups.current = importedGroups || {};
+      setOriginalData(courses || []);
+
+      localStorage.setItem('state:groups', JSON.stringify(importedGroups || {}));
+      localStorage.setItem('state:courses', JSON.stringify(courses || []));
+      e.target.value = '';
     } catch (error) {
       alert('Error parsing JSON file!');
     }
@@ -86,7 +98,7 @@ export const Table = ({
 
   const handleExport = (e) => {
     try {
-      const json = JSON.stringify(originalData, null, 2);
+      const json = JSON.stringify({ courses: originalData, groups: groups.current }, null, 2);
       const blob = new Blob([json], { type: 'application/json' });
       e.target.href = URL.createObjectURL(blob);
     } catch (error) {
@@ -158,13 +170,13 @@ export const Table = ({
             });
           } else {
             const name = hashToHex(indices.reduce((acc, i) => acc + originalData[i].code, ''));
-            indices.forEach((i) => (groups.current![originalData[i].code] = name));
+            indices.forEach((i) => (groups.current[originalData[i].code] = name));
 
             const map = new Map();
-            Object.values(groups.current!).forEach((v) => map.set(v, (map.get(v) || 0) + 1));
-            Object.entries(groups.current!).forEach(([k, v]) => {
+            Object.values(groups.current).forEach((v) => map.set(v, (map.get(v) || 0) + 1));
+            Object.entries(groups.current).forEach(([k, v]) => {
               if (map.get(v) == 1) {
-                delete groups.current![k];
+                delete groups.current[k];
               }
             });
 

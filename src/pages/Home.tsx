@@ -1,4 +1,4 @@
-import { Alert, Button, CircularProgress, Stack } from '@mui/material';
+import { Alert, Box, Button, CircularProgress, Stack } from '@mui/material';
 import { DOMResponse } from '../types/DOM_messages';
 import React, { useEffect, useState } from 'react';
 import { DOMErrors } from '../types/DOM_messages';
@@ -16,7 +16,7 @@ function Home() {
       navigate('/courses');
     }
 
-    localStorage.setItem('state:courses', JSON.stringify(courses));
+    if (courses) localStorage.setItem('state:courses', JSON.stringify(courses));
   };
 
   useEffect(() => {
@@ -54,22 +54,22 @@ function Home() {
           severity='warning'
         >
           {DOMErrors[response[0] as string]}
-          {' or '}
-          {
-            <Button
-              onClick={() => navigateToCourses([])}
-              sx={{
-                margin: '.5rem',
-                backgroundColor: 'var(--secondary)',
-                color: 'white',
-                '&:hover': { color: 'inherit' },
-              }}
-            >
-              Proceed Manually
-            </Button>
-          }
         </Alert>
       )}
+      {'\nor\n'}
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Button
+          onClick={() => navigateToCourses(null)}
+          sx={{
+            margin: '.5rem',
+            backgroundColor: 'var(--secondary)',
+            color: 'white',
+            '&:hover': { color: 'inherit' },
+          }}
+        >
+          Proceed Manually
+        </Button>
+      </Box>
     </>
   );
 }
