@@ -1,6 +1,6 @@
 import { Column, Row, Table } from '@tanstack/react-table';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { Course } from '../../types/course';
-import { useEffect, useState } from 'react';
 import '../../styles/tooltip.css';
 import React from 'react';
 
@@ -20,21 +20,21 @@ export const TableCell = ({
   const columnMeta = column.columnDef.meta;
   const [value, setValue] = useState<number | string | undefined>(initialValue);
 
+  const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    setValue(isNaN(value) || value <= 0 ? undefined : value);
+  };
+
   useEffect(() => {
     setValue(initialValue);
   }, [initialValue]);
 
-  const onBlur = () => {
+  useEffect(() => {
     tableMeta?.updateData(row.index, column.id, value);
-  };
+  }, [value]);
 
   return columnMeta?.editable && tableMeta?.editedRows[row.id] ? (
-    <input
-      value={value}
-      onBlur={onBlur}
-      type={columnMeta?.type || 'text'}
-      onChange={(e) => setValue(((value = e.target.value) => (+value > 0 ? +value : undefined))())}
-    />
+    <input value={value || ''} type={columnMeta?.type || 'text'} onChange={handleOnChange} />
   ) : (
     <span
       {...(columnMeta?.tooltip ? { className: 'tooltip', 'data-text': row.original.name } : {})}
