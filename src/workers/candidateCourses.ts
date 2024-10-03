@@ -2,6 +2,7 @@ import { sortByLSOne } from '../modules/LSone';
 
 self.addEventListener('message', function (e: MessageEvent) {
   const { courseValue, minValue, maxValue } = e.data;
+  if (courseValue === undefined || minValue === undefined || maxValue === undefined) return;
   self.postMessage(candidateCourses(courseValue, minValue, maxValue));
 });
 

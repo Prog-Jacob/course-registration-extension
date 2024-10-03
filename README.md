@@ -86,6 +86,36 @@ Contributions to the Course Registration Assistant are welcome! If you encounter
 2. Make the required changes on the forked repository.
 3. Submit a pull request with a helpful description of the changes.
 
+#### Get Started
+- Install dependencies:
+```bash
+npm install
+```
+- Install `web-ext` globally:
+```bash
+npm i -g web-ext
+```
+- Build and watch for code changes:
+```bash
+npm run start
+```
+- Serve and watch `build` folder for changes:
+```bash
+web-ext run --source-dir build --target chromium --target firefox-desktop
+```
+At this point, an open Chromium and Firefox tabs with the extension installed are there. You may modify the extension and watch the changes reflecting there automatically. After making the desired changes:
+- Format the code:
+```bash
+npm run format
+```
+- Build an optimized production version:
+```bash
+npm run build
+```
+- Resolve all errors if any:
+```bash
+web-ext lint --source-dir build --self-hosted
+```
 <a name="license"></a>
 
 ## License

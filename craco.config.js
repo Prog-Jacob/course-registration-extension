@@ -2,6 +2,18 @@ const path = require('path');
 const glob = require('glob');
 
 module.exports = {
+  devServer: {
+    open: false,
+    static: false,
+    client: {
+      overlay: {
+        warnings: false,
+      },
+    },
+    devMiddleware: {
+      writeToDisk: true,
+    },
+  },
   webpack: {
     configure: (webpackConfig, { env, paths }) => {
       const workerEntries = glob.sync('./src/workers/**/*.{js,ts}').reduce((acc, file) => {
