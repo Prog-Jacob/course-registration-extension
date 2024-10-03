@@ -11,10 +11,10 @@ import {
 import { ChangeEvent, Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { CourseOptions, ScheduleOptions } from '../types/course';
 import { faGripLines } from '@fortawesome/free-solid-svg-icons';
 import { BsFillArrowRightCircleFill } from 'react-icons/bs';
 import reactStringReplace from 'react-string-replace';
-import { ScheduleOptions } from '../types/course';
 import Slider from '@mui/material/Slider';
 import Schedule from './schedule/main';
 import '../styles/popup_schedule.css';
@@ -25,18 +25,14 @@ import React from 'react';
 
 export function FormOptions({
   scheduleOptions,
-  updateCourses,
+  setCourseOptions,
   onClick,
 }: {
   scheduleOptions: RefObject<ScheduleOptions>;
-  updateCourses: Dispatch<SetStateAction<number>>;
+  setCourseOptions: Dispatch<SetStateAction<CourseOptions>>;
   onClick: (e: MouseEvent<HTMLButtonElement>) => void;
 }) {
   const options = scheduleOptions.current;
-  const [courseOptions, setCourseOptions] = useState({
-    group: options.group,
-    section: options.section,
-  });
   const [preferMin, setPreferMin] = useState(options.preferMin);
   const [priorities, setPriorities] = useState([...options.priorities]);
   const [considerDisabled, setConsiderDisabled] = useState(options.considerDisabled);
@@ -63,14 +59,6 @@ export function FormOptions({
   const handleConsiderDisabled = (e: ChangeEvent<HTMLInputElement>) => {
     options.considerDisabled = e.target.checked;
     setConsiderDisabled(options.considerDisabled);
-  };
-
-  const handleCourseOptions = (label: string) => {
-    return (e: ChangeEvent<HTMLInputElement>) => {
-      options[label] = +e.target.value > 0 ? +e.target.value : 0;
-      setCourseOptions((old) => ({ ...old, [label]: options[label] }));
-      updateCourses(options.group * 100000 + options.section);
-    };
   };
 
   const handlePriorityReverse = (i: number) => {
@@ -153,7 +141,7 @@ export function FormOptions({
                 return (
                   <TextField
                     label={label[0].toUpperCase() + label.slice(1) + ':'}
-                    value={courseOptions[label]}
+                    type='number'
                     key={label}
                     placeholder='0'
                     variant='filled'
@@ -165,7 +153,12 @@ export function FormOptions({
                       '& .MuiFilledInput-root::after': { borderColor: 'var(--secondary)' },
                       '& .MuiInputLabel-root': { color: 'var(--secondary) !important' },
                     }}
-                    onChange={handleCourseOptions(label)}
+                    onChange={(e) =>
+                      setCourseOptions((old) => ({
+                        ...old,
+                        [label]: +e.target.value > 0 ? +e.target.value : 0,
+                      }))
+                    }
                     focused
                   />
                 );

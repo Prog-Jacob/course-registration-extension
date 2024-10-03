@@ -1,4 +1,4 @@
-import { Course, ScheduleOptions } from '../types/course';
+import { Course, CourseOptions, ScheduleOptions } from '../types/course';
 import TipsAndTricks from '../components/tips_and_tricks';
 import { FormOptions } from '../components/form_options';
 import { useEffect, useState, useRef } from 'react';
@@ -42,7 +42,7 @@ function SetOptions() {
     JSON.parse(localStorage.getItem('state:courses')) || defaultData.courses
   );
   const [isMaxExceeded, setIsMaxExceeded] = useState<boolean>(false);
-  const [shouldUpdateCourses, setShouldUpdateCourses] = useState(0);
+  const [courseOptions, setCourseOptions] = useState<CourseOptions>({});
 
   const scheduleOptions = useRef<ScheduleOptions>(
     JSON.parse(localStorage.getItem('state:scheduleOptions')) || defaultData.scheduleOptions
@@ -57,12 +57,12 @@ function SetOptions() {
       old.map((course) => ({
         ...course,
         options: {
-          group: scheduleOptions.current.group ?? course.options.group,
-          section: scheduleOptions.current.section ?? course.options.section,
+          group: courseOptions.group ?? course.options.group,
+          section: courseOptions.section ?? course.options.section,
         },
       }))
     );
-  }, [shouldUpdateCourses]);
+  }, [courseOptions]);
 
   const submitForm = () => {
     const leveledCourses: Course[][] = [];
@@ -117,7 +117,7 @@ function SetOptions() {
       <FormOptions
         scheduleOptions={scheduleOptions}
         onClick={submitForm}
-        updateCourses={setShouldUpdateCourses}
+        setCourseOptions={setCourseOptions}
       />
       <TipsAndTricks />
       <Table originalData={originalData} setOriginalData={setOriginalData} groups={groups} />
