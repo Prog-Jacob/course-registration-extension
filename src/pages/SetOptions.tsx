@@ -45,7 +45,7 @@ function SetOptions() {
   const [courseOptions, setCourseOptions] = useState<CourseOptions>({});
 
   const scheduleOptions = useRef<ScheduleOptions>(
-    JSON.parse(localStorage.getItem('state:scheduleOptions')) || defaultData.scheduleOptions
+    JSON.parse(sessionStorage.getItem('state:options')) || defaultData.scheduleOptions
   );
   const groups = useRef<CourseGroups>(
     JSON.parse(localStorage.getItem('state:groups')) || defaultData.groups
@@ -85,7 +85,7 @@ function SetOptions() {
 
     localStorage.setItem('state:courses', JSON.stringify(originalData));
     localStorage.setItem('state:groups', JSON.stringify(groups.current));
-    localStorage.setItem('state:scheduleOptions', JSON.stringify(scheduleOptions.current));
+    sessionStorage.setItem('state:options', JSON.stringify(scheduleOptions.current));
 
     navigate('/schedules', {
       state: {

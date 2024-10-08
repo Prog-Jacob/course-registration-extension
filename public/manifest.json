@@ -1,7 +1,7 @@
 {
   "name": "Course Registration Assistant",
   "description": "Avoid the hassle of schedule conflicts, customize your schedule, and register for all your courses with a single click.",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
