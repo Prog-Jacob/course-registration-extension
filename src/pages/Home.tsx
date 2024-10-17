@@ -16,7 +16,10 @@ function Home() {
       navigate('/courses');
     }
 
-    if (courses) localStorage.setItem('state:courses', JSON.stringify(courses));
+    if (courses) {
+      localStorage.setItem('state:groups', JSON.stringify({}));
+      localStorage.setItem('state:courses', JSON.stringify(courses));
+    }
   };
 
   useEffect(() => {
