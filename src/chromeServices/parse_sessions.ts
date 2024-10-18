@@ -33,6 +33,14 @@ export default function parseSessions(body: string): Session[] {
   let sectionNotes = '';
   let i = 0;
 
+  const clearSessions = () => {
+    sessionDates.clear();
+    sections.clear();
+    groups.clear();
+    isSection = false;
+    sessionState = '';
+  };
+
   Object.values(rows).forEach((row) => {
     const check = row.querySelector(`[id$="_cbSelectGroup"]`) as HTMLInputElement;
     const status = clean(row.querySelector(`[id$="_lblSecStatus"]`)?.innerHTML ?? '').toLowerCase();
@@ -42,12 +50,10 @@ export default function parseSessions(body: string): Session[] {
 
     if (check) {
       AddSessions();
-      isSection = false;
-      sessionState = status;
       isDisabled = check.disabled;
       i++;
     }
-    if (isDisabled && sessionState == 'schedule conflict') return;
+    if (sessionState !== 'schedule conflict') sessionState = status;
     isSection ||= ['tut', 'lab'].includes(teachingMethod);
 
     // Following code should be parsing student's faculty instead.
@@ -91,22 +97,21 @@ export default function parseSessions(body: string): Session[] {
   return Object.values(sessions);
 
   function AddSessions() {
-    if (!sessionDates.size) return;
-    if (i > 0 && sections.size == 0 && groups.size == 0 && isSection) sections.add(i);
-    const sectionsArr = Array.from(sections);
-    const groupsArr = Array.from(groups);
+    if (i > 0 && sessionState !== 'schedule conflict') {
+      if (sections.size == 0 && groups.size == 0) isSection ? sections.add(i) : groups.add(i);
+      const sectionsArr = Array.from(sections);
+      const groupsArr = Array.from(groups);
 
-    const session: Session = {
-      section: sectionsArr.sort((a, b) => a - b),
-      group: groupsArr.sort((a, b) => a - b),
-      dates: Array.from(sessionDates),
-      sectionNotes: sectionNotes,
-      isFull: isDisabled,
-    };
+      const session: Session = {
+        section: sectionsArr.sort((a, b) => a - b),
+        group: groupsArr.sort((a, b) => a - b),
+        dates: Array.from(sessionDates),
+        sectionNotes: sectionNotes,
+        isFull: isDisabled,
+      };
 
-    sessions.push(session);
-    sessionDates.clear();
-    sections.clear();
-    groups.clear();
+      sessions.push(session);
+    }
+    clearSessions();
   }
 }
