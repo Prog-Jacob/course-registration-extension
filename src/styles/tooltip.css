@@ -1,6 +1,6 @@
 .tooltip {
   position: relative;
-  text-decoration: underline dashed #aaa;
+  text-decoration: underline dashed;
 }
 
 .tooltip:before,

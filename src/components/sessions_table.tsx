@@ -1,3 +1,4 @@
+import { hashToHexColor } from '../modules/hash';
 import { useEffect, useRef } from 'react';
 import { Course } from '../types/course';
 import '../styles/tooltip.css';
@@ -33,21 +34,35 @@ export const SessionTable = ({ courses }: { courses: Course[] }) => {
             creditsSum.current += course.credits;
             return (
               <tr key={`${idx}`}>
-                {table.map(([header, id]) => (
-                  <td
-                    key={`${idx}_${id}`}
-                    {...(id == 'code' ? { className: 'tooltip', 'data-text': course.name } : {})}
-                  >
-                    {(() => {
-                      const component =
-                        id.split('.').reduce((obj, key) => obj[+key >= 0 ? +key : key], course) ??
-                        '';
-                      return header == 'Group' || header == 'Section'
-                        ? (component || []).join('&')
-                        : component;
-                    })()}
-                  </td>
-                ))}
+                {table.map(([header, id]) => {
+                  const name = course.code;
+                  const bgColor = name ? hashToHexColor(name) : '';
+                  const color = name ? (parseInt(bgColor.slice(1), 16) >> 23 ? '' : 'white') : '';
+                  return (
+                    <td
+                      key={`${idx}_${id}`}
+                      {...(id == 'code'
+                        ? {
+                            className: 'tooltip',
+                            'data-text': course.name,
+                            style: {
+                              backgroundColor: bgColor,
+                              color: color,
+                            },
+                          }
+                        : {})}
+                    >
+                      {(() => {
+                        const component =
+                          id.split('.').reduce((obj, key) => obj[+key >= 0 ? +key : key], course) ??
+                          '';
+                        return header == 'Group' || header == 'Section'
+                          ? (component || []).join('&')
+                          : component;
+                      })()}
+                    </td>
+                  );
+                })}
               </tr>
             );
           })}

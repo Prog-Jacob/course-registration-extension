@@ -3,6 +3,7 @@ import { Alert, Button, IconButton } from '@mui/material';
 import { Course } from '../types/course';
 import { createRoot } from 'react-dom/client';
 import { SlCalender } from 'react-icons/sl';
+import { MdDeleteForever } from 'react-icons/md';
 import { flatten } from './courses/main';
 import Schedule from './schedule/main';
 import '../styles/popup_schedule.css';
@@ -219,8 +220,9 @@ const CreateRow = ({
 
   useEffect(() => {
     setCourse((course) => {
-      course.current.sessions[rowIdx].section = values.section;
-      course.current.sessions[rowIdx].group = values.group;
+      course.current.sessions[rowIdx].section = values?.section || [];
+      course.current.sessions[rowIdx].group = values?.group || [];
+      if (!values) course.current.sessions[rowIdx].dates = [];
       return { ...course };
     });
   }, [values]);
@@ -232,40 +234,56 @@ const CreateRow = ({
   };
 
   return (
-    <>
-      {nestedTable(rowIdx).map(([_, __, id]) => (
-        <td key={`cell_${id}`}>
-          {id != 'dates' ? (
-            <input
-              key={`input_${id}`}
-              type='number'
-              value={values[id]}
-              onChange={(e) => {
-                const value = parseInt(e.target.value);
-                setValues((values) => {
-                  values[id] = isNaN(value) ? [] : [value];
-                  return { ...values };
-                });
-              }}
-            />
-          ) : (
-            <div>
-              <div
-                className='popup popup-schedule'
-                style={{ zIndex: 200, display: showSchedule ? '' : 'none' }}
-              >
-                <button className='popup-schedule-close' onClick={toggleSchedule}>
-                  X
-                </button>
-                <Schedule idx={rowIdx} courseOptions={course} />
+    values && (
+      <>
+        {nestedTable(rowIdx).map(([_, __, id]) => (
+          <td key={`cell_${id}`}>
+            {id != 'dates' ? (
+              <input
+                key={`input_${id}`}
+                type='number'
+                value={values[id]}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value);
+                  setValues((values) => {
+                    values[id] = isNaN(value) ? [] : [value];
+                    return { ...values };
+                  });
+                }}
+              />
+            ) : (
+              <div>
+                <div
+                  className='popup popup-schedule'
+                  style={{ zIndex: 200, display: showSchedule ? '' : 'none' }}
+                >
+                  <button className='popup-schedule-close' onClick={toggleSchedule}>
+                    X
+                  </button>
+                  <Schedule idx={rowIdx} courseOptions={course} />
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center',
+                  }}
+                >
+                  <IconButton onClick={toggleSchedule} sx={{ margin: 0, padding: 0, height: 25 }}>
+                    <SlCalender color='black' size={20} />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => setValues(null)}
+                    sx={{ margin: 0, padding: 0, height: 25 }}
+                  >
+                    <MdDeleteForever color='red' size={25} />
+                  </IconButton>
+                </div>
               </div>
-              <IconButton onClick={toggleSchedule} sx={{ margin: 0, padding: 0, height: 25 }}>
-                <SlCalender color='black' size={20} />
-              </IconButton>
-            </div>
-          )}
-        </td>
-      ))}
-    </>
+            )}
+          </td>
+        ))}
+      </>
+    )
   );
 };

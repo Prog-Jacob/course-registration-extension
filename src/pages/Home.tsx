@@ -36,7 +36,7 @@ function Home() {
         }
       });
     }
-  }, []);
+  }, [chrome.tabs.sendMessage, chrome.tabs.query]);
 
   return (
     <>
