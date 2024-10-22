@@ -4,15 +4,20 @@ import React, { useEffect, useState } from 'react';
 import { DOMErrors } from '../types/DOM_messages';
 import { useNavigate } from 'react-router-dom';
 import { Course } from '../types/course';
+import TestData from '../TestData.json';
+
+const chrome = window.chrome;
 
 function Home() {
   const navigate = useNavigate();
   const [response, setResponse] = useState<DOMResponse>(['00']);
 
   const navigateToCourses = (courses: Course[]) => {
-    if (chrome.tabs != undefined) {
+    if (chrome?.tabs?.create) {
       chrome.tabs.create({ url: document.URL + '#/courses' });
     } else {
+      localStorage.setItem('state:courses', JSON.stringify(TestData.courses));
+      localStorage.setItem('state:groups', JSON.stringify(TestData.groups));
       navigate('/courses');
     }
 
@@ -23,7 +28,7 @@ function Home() {
   };
 
   useEffect(() => {
-    if (chrome.tabs) {
+    if (chrome?.tabs) {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const tab = tabs[0];
         const url = tab.url;
@@ -36,7 +41,7 @@ function Home() {
         }
       });
     }
-  }, [chrome.tabs.sendMessage, chrome.tabs.query]);
+  }, [chrome?.tabs?.sendMessage, chrome?.tabs?.query, chrome?.runtime?.onMessage]);
 
   return (
     <>

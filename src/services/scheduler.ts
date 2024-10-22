@@ -3,11 +3,15 @@ import { Combination, Schedule, UnpackedSolution } from '../types/combination';
 import { CourseGroups } from '../types/course';
 import { Trie } from './prefix_tree';
 
+const chrome = window.chrome;
+const candidateWorkerLocation = './static/js/workers/candidateCourses.js';
+const generateWorkerLocation = './static/js/workers/generateCombinations.js';
+
 const generateCombinations = new Worker(
-  chrome.runtime.getURL('./static/js/workers/generateCombinations.js')
+  chrome?.runtime?.getURL?.(generateWorkerLocation) || window.location + generateWorkerLocation
 );
 const candidateCourses = new Worker(
-  chrome.runtime.getURL('./static/js/workers/candidateCourses.js')
+  chrome?.runtime?.getURL?.(candidateWorkerLocation) || window.location + candidateWorkerLocation
 );
 
 export default class Scheduler {

@@ -24,4 +24,5 @@ function messagesFromReactAppListener(
   return true;
 }
 
-chrome.runtime.onMessage.addListener(messagesFromReactAppListener);
+if (typeof chrome != 'undefined')
+  chrome?.runtime?.onMessage?.addListener?.(messagesFromReactAppListener);
