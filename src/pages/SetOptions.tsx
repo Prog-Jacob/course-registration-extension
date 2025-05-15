@@ -8,6 +8,18 @@ import { useNavigate } from 'react-router-dom';
 import { Alert } from '@mui/material';
 import React from 'react';
 
+export const levelCourses = (courses: Course[]) => {
+  const leveledCourses: Course[][] = [];
+
+  courses.forEach((course, idx) =>
+    course.priority == courses[idx - 1]?.priority
+      ? leveledCourses[leveledCourses.length - 1].push(course)
+      : leveledCourses.push([course])
+  );
+
+  return leveledCourses;
+};
+
 export const defaultData = {
   groups: {},
   courses: [],
@@ -65,14 +77,7 @@ function SetOptions() {
   }, [courseOptions]);
 
   const submitForm = () => {
-    const leveledCourses: Course[][] = [];
-
-    originalData.forEach((course, idx) =>
-      course.priority == originalData[idx - 1]?.priority
-        ? leveledCourses[leveledCourses.length - 1].push(course)
-        : leveledCourses.push([course])
-    );
-
+    const leveledCourses = levelCourses(originalData);
     if (leveledCourses.length > 30) {
       if (!isMaxExceeded) {
         setIsMaxExceeded(true);
