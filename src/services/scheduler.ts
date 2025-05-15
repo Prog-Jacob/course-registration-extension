@@ -1,5 +1,7 @@
 import { Course, Option, ScheduleOptions, ScheduleProperties } from '../types/course';
 import { Combination, Schedule, UnpackedSolution } from '../types/combination';
+import { createSchedule } from '../modules/schedule';
+import { MemoizeWithKey } from '../modules/cache';
 import { CourseGroups } from '../types/course';
 import { Trie } from './prefix_tree';
 
@@ -41,7 +43,7 @@ export default class Scheduler {
 
   constructor(courses: Course[][], options: ScheduleOptions, groups: CourseGroups) {
     if (!courses?.length) throw new Error('You must provide at least one course!');
-    this.baseSchedules = [{ sessions: [], dates: options.exclude_dates }];
+    this.baseSchedules = [createSchedule([], options.exclude_dates)];
     this.considerFull = options.considerDisabled ?? false;
     this.priorities = options.priorities;
     this.preferMin = options.preferMin;
@@ -217,6 +219,7 @@ export default class Scheduler {
   }
 
   private sortSolutions(solutions: UnpackedSolution[]): UnpackedSolution[] {
+    (this.getScheduleProperties as any).clearCache();
     return solutions.sort((a, b) => {
       const schedule1 = this.getScheduleProperties(a.schedule);
       const schedule2 = this.getScheduleProperties(b.schedule);
@@ -228,38 +231,34 @@ export default class Scheduler {
     });
   }
 
-  private getScheduleProperties(schedule: Schedule): ScheduleProperties {
+  @MemoizeWithKey((schedule: Schedule) => schedule.id)
+  getScheduleProperties(schedule: Schedule): ScheduleProperties {
+    const { dates } = schedule;
     let startOfTheWeek = 0;
     let endOfTheWeek = 4;
     let totalFreeDays = 0;
     let totalEarlySessions = 0;
     let totalLateSessions = 0;
 
-    while (
-      startOfTheWeek <= endOfTheWeek &&
-      !schedule.dates.slice(startOfTheWeek * 8, (startOfTheWeek + 1) * 8).some(Boolean)
-    ) {
+    while (startOfTheWeek <= endOfTheWeek && !this.hasSession(dates, startOfTheWeek)) {
       startOfTheWeek++;
     }
-    while (
-      startOfTheWeek <= endOfTheWeek &&
-      !schedule.dates.slice(endOfTheWeek * 8, (endOfTheWeek + 1) * 8).some(Boolean)
-    ) {
+    while (startOfTheWeek <= endOfTheWeek && !this.hasSession(dates, endOfTheWeek)) {
       endOfTheWeek--;
     }
 
     totalFreeDays = 5 - (endOfTheWeek - startOfTheWeek + 1);
 
     for (let day = startOfTheWeek; day <= endOfTheWeek; day++) {
-      if (schedule.dates.slice(day * 8, (day + 1) * 8).some(Boolean)) {
+      if (this.hasSession(dates, day)) {
         let early = 0;
         let late = 7;
 
-        while (early <= late && !schedule.dates[day * 8 + early]) {
+        while (early <= late && !dates[day * 8 + early]) {
           ++totalEarlySessions;
           ++early;
         }
-        while (early <= late && !schedule.dates[day * 8 + late]) {
+        while (early <= late && !dates[day * 8 + late]) {
           ++totalLateSessions;
           --late;
         }
@@ -275,6 +274,14 @@ export default class Scheduler {
       totalEarlySessions,
       totalLateSessions,
     };
+  }
+
+  private hasSession(dates: boolean[], day: number): boolean {
+    const offset = day * 8;
+    for (let i = 0; i < 8; i++) {
+      if (dates[offset + i]) return true;
+    }
+    return false;
   }
 
   private preferShortWeek(a: ScheduleProperties, b: ScheduleProperties): number {

@@ -1,6 +1,7 @@
 export type Schedule = {
   sessions: number[];
   dates: boolean[];
+  id: string;
 };
 
 export type Combination = {

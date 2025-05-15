@@ -1,4 +1,5 @@
 import { Trie } from '../services/prefix_tree';
+import { createSchedule } from '../modules/schedule';
 import { Combination, Schedule } from '../types/combination';
 
 self.addEventListener('message', function (e: MessageEvent) {
@@ -60,7 +61,7 @@ function generateCombinations(mask: number): Combination {
 
           const newDates = schedule.dates.slice();
           session.dates.forEach((date) => (newDates[date] = true));
-          nextSchedules.push({ sessions: [...schedule.sessions, j], dates: newDates });
+          nextSchedules.push({ sessions: [...schedule.sessions, j], dates: newDates, id: '' });
         }
       }
 
@@ -81,5 +82,6 @@ function generateCombinations(mask: number): Combination {
     if (ans.courses === 1) base.visitedGroups = { ...visitedGroups };
     ans.courses |= 1;
   }
+  ans.schedules = ans.schedules.map(({ sessions, dates }) => createSchedule(sessions, dates));
   return ans;
 }

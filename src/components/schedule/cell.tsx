@@ -35,7 +35,7 @@ export const Cell = ({
     setChecked(!checked);
     if (options?.current) options.current.exclude_dates[toggler!] = !checked;
     else if (courseOptions?.current)
-      courseOptions.current.sessions[idx!].dates[toggler!] = !checked ? toggler ?? 0 : undefined;
+      courseOptions.current.sessions[idx!].dates[toggler!] = !checked ? (toggler ?? 0) : undefined;
   };
 
   return toggler != undefined ? (

@@ -8,7 +8,7 @@ import {
   ChangeEvent,
   MutableRefObject,
 } from 'react';
-import { modifyObject } from '../../modules/modify_nested_objects';
+import { modifyObject } from '../../modules/object';
 import { CourseGroups } from '../../types/course';
 import { Course } from '../../types/course';
 import { hashToHex } from '../../modules/hash';

@@ -10,7 +10,7 @@ export function hash(str: string) {
 }
 
 export function hashToHex(str: string): string {
-  return hash(str + seed).toString(16);
+  return hash(str).toString(16) + hash(str + seed).toString(16);
 }
 
 export function hashToHexColor(str: string): string {
