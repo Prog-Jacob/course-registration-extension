@@ -1,10 +1,10 @@
-import packageInfo from '../package.json';
-import Scheduler from './services/scheduler';
-import { defaultData } from './pages/SetOptions';
-import { levelCourses } from './pages/SetOptions';
-import { Course, ScheduleOptions } from './types/course';
+import Scheduler from './scheduler';
+import packageInfo from '../../package.json';
+import { defaultData } from '../pages/SetOptions';
+import { levelCourses } from '../pages/SetOptions';
+import { Course, ScheduleOptions } from '../types/course';
 
-export async function benchmark(file: File) {
+export async function benchmark(file: File, saveFiles = true) {
   const text = await file?.text();
   const { courses, groups } = JSON.parse(text);
   const options = {
@@ -22,7 +22,7 @@ export async function benchmark(file: File) {
   while (true) {
     try {
       const solutions = await scheduler.getSolutions();
-      saveSolutions(solutions, scheduler.getRange());
+      saveFiles && saveSolutions(solutions, scheduler.getRange());
       scheduler.next();
     } catch (error) {
       console.log('Finished iterating scheduler:', (error as Error).message);

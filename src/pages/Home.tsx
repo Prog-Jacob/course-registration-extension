@@ -12,6 +12,14 @@ function Home() {
   const navigate = useNavigate();
   const [response, setResponse] = useState<DOMResponse>(['00']);
 
+  const navigateToBenchmark = () => {
+    if (chrome?.tabs?.create) {
+      chrome.tabs.create({ url: document.URL + '#/benchmark' });
+    } else {
+      navigate('/benchmark');
+    }
+  };
+
   const navigateToCourses = (courses: Course[]) => {
     if (chrome?.tabs?.create) {
       chrome.tabs.create({ url: document.URL + '#/courses' });
@@ -66,6 +74,19 @@ function Home() {
       )}
       {'\nor\n'}
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        {process.env.REACT_APP_DEBUG_ENV === 'benchmark' && (
+          <Button
+            onClick={navigateToBenchmark}
+            sx={{
+              margin: '.5rem',
+              backgroundColor: 'var(--secondary)',
+              color: 'white',
+              '&:hover': { color: 'inherit' },
+            }}
+          >
+            Benchmark
+          </Button>
+        )}
         <Button
           onClick={() => navigateToCourses(null)}
           sx={{

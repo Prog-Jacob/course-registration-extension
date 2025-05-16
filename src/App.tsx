@@ -1,6 +1,7 @@
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import ViewSchedules from './pages/ViewSchedules';
 import SetOptions from './pages/SetOptions';
+import Benchmark from './pages/Benchmark';
 import Header from './components/header';
 import Footer from './components/footer';
 import Home from './pages/Home';
@@ -32,6 +33,9 @@ function App() {
             <Route index element={<Home />}></Route>
             <Route path='/courses' element={<SetOptions />} />
             <Route path='/schedules' element={<ViewSchedules />}></Route>
+            {process.env.REACT_APP_DEBUG_ENV === 'benchmark' && (
+              <Route path='/benchmark' element={<Benchmark />} />
+            )}
           </Routes>
         </Router>
       </div>

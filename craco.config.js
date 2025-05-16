@@ -24,7 +24,7 @@ module.exports = {
 
       return {
         ...webpackConfig,
-        devtool: false,
+        devtool: env === 'production' ? false : 'cheap-module-source-map',
         mode: env,
         entry: {
           main: [paths.appIndexJs].filter(Boolean),
