@@ -22,7 +22,16 @@ const Footer = () => {
     },
   ];
   return (
-    <AppBar position='static' sx={{ marginTop: '1rem', backgroundColor: 'var(--secondary)' }}>
+    <AppBar
+      position='static'
+      sx={{
+        top: 'auto',
+        marginTop: '1rem',
+        height: 'fit-content',
+        bottom: '0 !important',
+        backgroundColor: 'var(--secondary)',
+      }}
+    >
       <Toolbar>
         {resources.map((resource, index) => (
           <Typography key={index} sx={{ margin: 'auto' }} variant='h6' color='inherit'>
