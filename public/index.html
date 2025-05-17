@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=600, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="Web site created using create-react-app" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
@@ -36,5 +35,16 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script>
+      (function () {
+        const targetWidth = 600;
+        const scale = targetWidth / window.innerWidth;
+
+        const meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = `width=${targetWidth}, initial-scale=${scale}`;
+        document.head.appendChild(meta);
+      })();
+    </script>
   </body>
 </html>
