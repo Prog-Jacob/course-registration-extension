@@ -49,7 +49,7 @@ export const defaultData = {
   },
 };
 
-function SetOptions() {
+function SetOptions({ submitForm, children }: { submitForm?; children?: React.ReactNode }) {
   const [originalData, setOriginalData] = useState<Course[]>(
     JSON.parse(localStorage.getItem('state:courses')) || defaultData.courses
   );
@@ -76,30 +76,32 @@ function SetOptions() {
     );
   }, [courseOptions]);
 
-  const submitForm = () => {
-    const leveledCourses = levelCourses(originalData);
-    if (leveledCourses.length > 30) {
-      if (!isMaxExceeded) {
-        setIsMaxExceeded(true);
-        setTimeout(() => {
-          setIsMaxExceeded(false);
-        }, 5000);
+  submitForm =
+    submitForm ??
+    ((courses, groups, options, isMaxExceeded, setIsMaxExceeded) => {
+      const leveledCourses = levelCourses(courses);
+      if (leveledCourses.length > 30) {
+        if (!isMaxExceeded) {
+          setIsMaxExceeded(true);
+          setTimeout(() => {
+            setIsMaxExceeded(false);
+          }, 5000);
+        }
+        return;
       }
-      return;
-    }
 
-    localStorage.setItem('state:courses', JSON.stringify(originalData));
-    localStorage.setItem('state:groups', JSON.stringify(groups.current));
-    sessionStorage.setItem('state:options', JSON.stringify(scheduleOptions.current));
+      localStorage.setItem('state:groups', JSON.stringify(groups));
+      localStorage.setItem('state:courses', JSON.stringify(courses));
+      sessionStorage.setItem('state:options', JSON.stringify(options));
 
-    navigate('/schedules', {
-      state: {
-        courses: leveledCourses,
-        options: scheduleOptions.current,
-        groups: groups.current,
-      },
+      navigate('/schedules', {
+        state: {
+          courses: leveledCourses,
+          options,
+          groups,
+        },
+      });
     });
-  };
 
   return (
     <>
@@ -121,9 +123,19 @@ function SetOptions() {
       )}
       <FormOptions
         scheduleOptions={scheduleOptions}
-        onClick={submitForm}
+        onClick={() =>
+          submitForm(
+            originalData,
+            groups.current,
+            scheduleOptions.current,
+            isMaxExceeded,
+            setIsMaxExceeded
+          )
+        }
         setCourseOptions={setCourseOptions}
-      />
+      >
+        {children}
+      </FormOptions>
       <TipsAndTricks />
       <Table originalData={originalData} setOriginalData={setOriginalData} groups={groups} />
     </>

@@ -10,9 +10,13 @@ class TrieNode {
 
 export class Trie {
   root: TrieNode;
+  miss: number;
+  hit: number;
 
   constructor() {
     this.root = new TrieNode();
+    this.miss = 0;
+    this.hit = 0;
   }
 
   insert(word: string): void {
@@ -27,6 +31,12 @@ export class Trie {
   }
 
   inverseStartsWIth(prefix: string): boolean {
+    const isHit = this._inverseStartsWIth(prefix);
+    isHit ? this.hit++ : this.miss++;
+    return isHit;
+  }
+
+  private _inverseStartsWIth(prefix: string): boolean {
     let currNode = this.root;
 
     for (const char of prefix) {
@@ -36,5 +46,10 @@ export class Trie {
     }
 
     return currNode.isEnd;
+  }
+
+  log() {
+    console.log('Number of cache hits:', this.hit, 'out of', this.hit + this.miss);
+    console.log(`Hit ratio: ${((this.hit / (this.hit + this.miss)) * 100).toFixed(2)}%`);
   }
 }

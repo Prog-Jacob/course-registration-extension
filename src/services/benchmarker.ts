@@ -1,19 +1,9 @@
 import Scheduler from './scheduler';
 import packageInfo from '../../package.json';
-import { defaultData } from '../pages/SetOptions';
-import { levelCourses } from '../pages/SetOptions';
-import { Course, ScheduleOptions } from '../types/course';
+import { Course } from '../types/course';
 
-export async function benchmark(file: File, saveFiles = true) {
-  const text = await file?.text();
-  const { courses, groups } = JSON.parse(text);
-  const options = {
-    ...defaultData.scheduleOptions,
-    maxCredits: 25,
-    minCredits: 14,
-  } as ScheduleOptions;
-
-  const scheduler = new Scheduler(levelCourses(courses), options, groups);
+export async function benchmark(courses, groups, options, saveFiles = true) {
+  const scheduler = new Scheduler(courses, options, groups);
 
   console.log(`Benchmark started.`);
   const start = performance.now();
@@ -34,6 +24,7 @@ export async function benchmark(file: File, saveFiles = true) {
   const totalDuration = end - start;
   console.log(`Benchmark complete.`);
   console.log(`Total time: ${(totalDuration / 1000).toFixed(2)}s`);
+  scheduler.log();
 }
 
 function saveSolutions(solutions: Course[][], index: number) {

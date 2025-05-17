@@ -3,7 +3,6 @@ import { Combination, Schedule, UnpackedSolution } from '../types/combination';
 import { createSchedule } from '../modules/schedule';
 import { MemoizeWithKey } from '../modules/cache';
 import { CourseGroups } from '../types/course';
-import { Trie } from './prefix_tree';
 
 const chrome = window.chrome;
 const candidateWorkerLocation = './static/js/workers/candidateCourses.js';
@@ -34,12 +33,9 @@ export default class Scheduler {
   private schedules: Course[][][];
   private considerFull: boolean;
   private preferMin: boolean;
-  private conflicts: Trie;
 
   // Groups
-  private visitedGroups: { [key: string]: boolean };
   private priorities: Option[];
-  private groups: CourseGroups;
 
   constructor(courses: Course[][], options: ScheduleOptions, groups: CourseGroups) {
     if (!courses?.length) throw new Error('You must provide at least one course!');
@@ -50,11 +46,8 @@ export default class Scheduler {
     this.min = options.minCredits;
     this.max = options.maxCredits;
     this.courses = [...courses];
-    this.conflicts = new Trie();
     this.validCombinations = [];
     this.mustIncludeCost = 0;
-    this.visitedGroups = {};
-    this.groups = groups;
     this.schedules = [];
     this.filterCourses();
 
@@ -114,6 +107,10 @@ export default class Scheduler {
 
     this.rangePtr = this.preferMin ? this.min : this.max;
     this.increment = this.preferMin ? 1 : -1;
+  }
+
+  public log() {
+    generateCombinations.postMessage({ message: 'tree-log' });
   }
 
   public next() {

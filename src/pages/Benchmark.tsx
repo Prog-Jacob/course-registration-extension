@@ -1,32 +1,49 @@
-import { Box, Button, Checkbox, FormControlLabel } from '@mui/material';
-import React, { ChangeEvent } from 'react';
+import { Checkbox, FormControlLabel } from '@mui/material';
+import SetOptions, { levelCourses } from './SetOptions';
 import { benchmark } from '../services/benchmarker';
+import React, { ChangeEvent } from 'react';
 
 function Benchmark() {
   const [loading, setLoading] = React.useState(false);
   const [saveFiles, setSaveFiles] = React.useState(false);
 
+  const submitForm = async (courses, groups, options, isMaxExceeded, setIsMaxExceeded) => {
+    const leveledCourses = levelCourses(courses);
+    if (leveledCourses.length > 30) {
+      if (!isMaxExceeded) {
+        setIsMaxExceeded(true);
+        setTimeout(() => {
+          setIsMaxExceeded(false);
+        }, 5000);
+      }
+      return;
+    }
+
+    localStorage.setItem('state:groups', JSON.stringify(groups));
+    localStorage.setItem('state:courses', JSON.stringify(courses));
+    sessionStorage.setItem('state:options', JSON.stringify(options));
+
+    setLoading(true);
+    await benchmark(leveledCourses, groups, options, saveFiles);
+    setLoading(false);
+  };
+
   const handleSaveFiles = (e: ChangeEvent<HTMLInputElement>) => {
     setSaveFiles(e.target.checked);
   };
 
-  const handleImport = async (e: ChangeEvent<HTMLInputElement>) => {
-    try {
-      const file = await e.target.files[0];
-      setLoading(true);
-      await benchmark(file, saveFiles);
-      setLoading(false);
-    } catch (error) {
-      alert('Error parsing JSON file!');
-    }
-  };
-
   return loading ? (
-    <p style={{ textAlign: 'center' }}>Loading...</p>
+    <>
+      <p style={{ textAlign: 'center' }}>Loading...</p>
+      <p style={{ textAlign: 'center' }}>Open Console for a few insights</p>
+      <p style={{ textAlign: 'center' }}>
+        Start profiling the moment you click `Generate Schedules`
+      </p>
+    </>
   ) : (
-    <Box sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
+    <SetOptions submitForm={submitForm}>
       <FormControlLabel
-        sx={{ margin: '0.5rem', color: 'var(--secondary)' }}
+        className='form-option'
         control={
           <Checkbox
             checked={saveFiles}
@@ -37,25 +54,7 @@ function Benchmark() {
         label='Save Solutions'
         labelPlacement='start'
       />
-
-      <Button
-        sx={{
-          margin: '.5rem',
-          backgroundColor: 'var(--secondary)',
-          color: 'white',
-          '&:hover': { color: 'inherit' },
-        }}
-      >
-        <label htmlFor='benchmark-courses'>Benchmark</label>
-        <input
-          id='benchmark-courses'
-          type='file'
-          accept='.json'
-          style={{ display: 'none' }}
-          onChange={handleImport}
-        />
-      </Button>
-    </Box>
+    </SetOptions>
   );
 }
 export default Benchmark;

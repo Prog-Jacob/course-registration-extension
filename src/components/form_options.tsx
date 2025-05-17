@@ -27,10 +27,12 @@ export function FormOptions({
   scheduleOptions,
   setCourseOptions,
   onClick,
+  children,
 }: {
   scheduleOptions: RefObject<ScheduleOptions>;
   setCourseOptions: Dispatch<SetStateAction<CourseOptions>>;
   onClick: (e: MouseEvent<HTMLButtonElement>) => void;
+  children: React.ReactNode;
 }) {
   const options = scheduleOptions.current;
   const [preferMin, setPreferMin] = useState(options.preferMin);
@@ -285,6 +287,7 @@ export function FormOptions({
           label='Get a light schedule:'
           labelPlacement='start'
         />
+        {children}
         <div
           style={{
             display: 'flex',

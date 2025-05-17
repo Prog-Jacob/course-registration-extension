@@ -20,6 +20,9 @@ self.addEventListener('message', function (e: MessageEvent) {
     case 'generate':
       self.postMessage(generateCombinations(data.mask));
       break;
+    case 'tree-log':
+      base.conflicts.log();
+      break;
   }
 });
 
