@@ -1,6 +1,6 @@
 {
   "name": "course-planner-extension",
-  "version": "1.4.51",
+  "version": "1.4.52",
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",

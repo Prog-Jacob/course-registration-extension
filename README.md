@@ -50,7 +50,7 @@ The Course Registration Assistant is a Chrome extension designed to streamline t
 
 #### Chrome/Edge/Opera/Etc:
 
-1. [Click to download extension](https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/v1.4.51/course_registration_assistant-1.4.51.zip).
+1. [Click to download extension](https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/v1.4.52/course_registration_assistant-1.4.52.zip).
 
 2. Follow the following instructions:
 
@@ -60,7 +60,7 @@ https://github.com/Prog-Jacob/course-registration-extension/assets/84212225/03ac
 
 #### Firefox:
 
-1. [Click to download extension](https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/v1.4.51/course_registration_assistant-1.4.51.xpi).
+1. [Click to download extension](https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/v1.4.52/course_registration_assistant-1.4.52.xpi).
 
 2. Follow the following instructions:
 

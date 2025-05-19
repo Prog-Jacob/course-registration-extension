@@ -163,10 +163,11 @@ export default class Scheduler {
       j = 0;
     let mask = courses;
     const solution: Course[] = [];
+    const baseCourses = this.getCourses();
 
     while (mask) {
       if ((mask & 1) == 1) {
-        for (const course of this.getCourses()[i]) {
+        for (const course of baseCourses[i]) {
           const session = course.sessions[schedule.sessions[j]];
           solution.push({
             ...course,
