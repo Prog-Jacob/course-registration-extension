@@ -28,6 +28,10 @@
   background-color: #f6f6f6;
 }
 
+.course-table-body > tr:hover {
+  background-color: #e5e5e5;
+}
+
 .course-table > tbody > tr:last-of-type {
   border-bottom: 2px solid var(--secondary);
 }

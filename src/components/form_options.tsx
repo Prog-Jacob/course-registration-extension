@@ -10,11 +10,10 @@ import {
 } from '@mui/material';
 import { ChangeEvent, Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { CourseOptions, ScheduleOptions } from '../types/course';
-import { faGripLines } from '@fortawesome/free-solid-svg-icons';
 import { BsFillArrowRightCircleFill } from 'react-icons/bs';
 import reactStringReplace from 'react-string-replace';
+import { MdDragIndicator } from 'react-icons/md';
 import Slider from '@mui/material/Slider';
 import Schedule from './schedule/main';
 import '../styles/popup_schedule.css';
@@ -207,10 +206,7 @@ export function FormOptions({
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
-                        <FontAwesomeIcon
-                          icon={faGripLines}
-                          style={{ color: 'var(--secondary)', fontSize: 18 }}
-                        />
+                        <MdDragIndicator style={{ color: 'var(--secondary)', fontSize: 18 }} />
                         <ListItemText
                           primary={reactStringReplace(priority.label, '[NOT]', () => (
                             <FormControlLabel
