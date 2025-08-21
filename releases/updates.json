@@ -1,10 +1,10 @@
 {
   "addons": {
-    "{ce4dd9b9-cf55-4865-bf73-4c44dac9c2da}": {
+    "{c484facc-e1ce-42bb-a796-550472975f2b}": {
       "updates": [
         {
-          "version": "1.4.53",
-          "update_link": "https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/v1.4.53/course_registration_assistant-1.4.53.xpi"
+          "version": "1.4.54",
+          "update_link": "https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/v1.4.54/course_registration_assistant-1.4.54.xpi"
         }
       ]
     }

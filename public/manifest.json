@@ -1,7 +1,7 @@
 {
   "name": "Course Registration Assistant",
   "description": "Avoid the hassle of schedule conflicts, customize your schedule, and register for all your courses with a single click.",
-  "version": "1.4.53",
+  "version": "1.4.54",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
@@ -29,7 +29,7 @@
   ],
   "browser_specific_settings": {
     "gecko": {
-      "id": "{ce4dd9b9-cf55-4865-bf73-4c44dac9c2da}",
+      "id": "{c484facc-e1ce-42bb-a796-550472975f2b}",
       "update_url": "https://raw.githubusercontent.com/Prog-Jacob/course-registration-extension/master/releases/updates.json"
     }
   },
