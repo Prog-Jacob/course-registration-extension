@@ -19,6 +19,7 @@
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.18",
     "crx": "^5.0.1",
+    "posthog-js": "^1.260.2",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
@@ -28,7 +29,8 @@
     "react-string-replace": "^1.1.1",
     "react-to-print": "^2.14.15",
     "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "webextension-polyfill": "^0.12.0"
   },
   "scripts": {
     "start": "craco start",
@@ -54,6 +56,7 @@
   "devDependencies": {
     "@types/chrome": "^0.0.246",
     "@types/react-beautiful-dnd": "^13.1.8",
+    "@types/webextension-polyfill": "^0.12.3",
     "prettier": "^3.2.5"
   },
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
