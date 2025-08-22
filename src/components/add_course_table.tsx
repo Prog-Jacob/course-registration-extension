@@ -1,4 +1,5 @@
 import { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from 'react';
+import { useAnalytics, ANALYTICS_EVENTS } from '../services/analytics';
 import { Alert, Button, IconButton } from '@mui/material';
 import { Course } from '../types/course';
 import { createRoot } from 'react-dom/client';
@@ -36,6 +37,7 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
     })
   );
   const [courseId, setCourseId] = useState('');
+  const { track } = useAnalytics();
 
   const insertSession = () => {
     const tableElement = document.getElementById('add-course-table') as HTMLTableElement;
@@ -49,13 +51,32 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
     };
     createRoot(row).render(<CreateRow rowIdx={idx} course={course} setCourse={setCourse} />);
     ++rowIdx.current;
+
+    // Track session addition
+    track(ANALYTICS_EVENTS.COURSE_ADDED, {
+      action: 'session_added',
+      session_index: idx,
+      course_code: course.current.code,
+      timestamp: Date.now(),
+    });
   };
 
   const clearSessions = () => {
+    const sessionCount = rowIdx.current;
     const tableElement = document.getElementById('add-course-table') as HTMLTableElement;
     while (rowIdx.current > 0) {
       tableElement.deleteRow(-1);
       --rowIdx.current;
+    }
+
+    // Track sessions cleared
+    if (sessionCount > 0) {
+      track(ANALYTICS_EVENTS.COURSE_REMOVED, {
+        action: 'sessions_cleared',
+        session_count: sessionCount,
+        course_code: course.current.code,
+        timestamp: Date.now(),
+      });
     }
   };
 
@@ -76,6 +97,17 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
           )
         )
       );
+
+      // Track successful course submission
+      track(ANALYTICS_EVENTS.COURSE_ADDED, {
+        action: 'course_submitted',
+        course_code: copyCourse.code,
+        credits: copyCourse.credits,
+        priority: copyCourse.priority,
+        session_count: copyCourse.sessions.length,
+        timestamp: Date.now(),
+      });
+
       closeWindow();
     } else {
       const alert = document.getElementById('SubmitCourseAlert');
@@ -85,6 +117,16 @@ export const AddCourseTable = ({ setData }: { setData: Dispatch<SetStateAction<C
           alert.style.display = 'none';
         }, 5000);
       }
+
+      // Track course submission validation failure
+      track(ANALYTICS_EVENTS.ERROR_OCCURRED, {
+        error_type: 'course_validation_failed',
+        error_message: 'Course validation failed - missing required fields',
+        course_code: copyCourse.code,
+        credits: copyCourse.credits,
+        session_count: copyCourse.sessions.length,
+        timestamp: Date.now(),
+      });
       return;
     }
   };

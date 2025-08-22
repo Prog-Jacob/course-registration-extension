@@ -1,4 +1,5 @@
 import { Course, CourseOptions, ScheduleOptions } from '../types/course';
+import { useAnalytics, ANALYTICS_EVENTS } from '../services/analytics';
 import TipsAndTricks from '../components/tips_and_tricks';
 import { FormOptions } from '../components/form_options';
 import { useEffect, useState, useRef } from 'react';
@@ -63,6 +64,17 @@ function SetOptions({ submitForm, children }: { submitForm?; children?: React.Re
     JSON.parse(localStorage.getItem('state:groups')) || defaultData.groups
   );
   const navigate = useNavigate();
+  const { track } = useAnalytics();
+
+  // Track page view
+  useEffect(() => {
+    track(ANALYTICS_EVENTS.PAGE_NAVIGATED, {
+      page: 'set_options',
+      timestamp: Date.now(),
+      course_count: originalData.length,
+      has_groups: Object.keys(groups.current).length > 0,
+    });
+  }, [track, originalData.length]);
 
   useEffect(() => {
     setOriginalData((old) =>
@@ -79,6 +91,15 @@ function SetOptions({ submitForm, children }: { submitForm?; children?: React.Re
   submitForm =
     submitForm ??
     ((courses, groups, options, isMaxExceeded, setIsMaxExceeded) => {
+      // Track schedule generation attempt
+      track(ANALYTICS_EVENTS.SCHEDULE_GENERATION_STARTED, {
+        course_count: courses.length,
+        group_count: Object.keys(groups).length,
+        max_credits: options.maxCredits,
+        min_credits: options.minCredits,
+        timestamp: Date.now(),
+      });
+
       const leveledCourses = levelCourses(courses);
       if (leveledCourses.length > 30) {
         if (!isMaxExceeded) {
@@ -87,12 +108,31 @@ function SetOptions({ submitForm, children }: { submitForm?; children?: React.Re
             setIsMaxExceeded(false);
           }, 5000);
         }
+
+        // Track max courses exceeded error
+        track(ANALYTICS_EVENTS.ERROR_OCCURRED, {
+          error_type: 'max_courses_exceeded',
+          error_message: 'Maximum number of courses reached',
+          course_count: courses.length,
+          leveled_course_count: leveledCourses.length,
+          timestamp: Date.now(),
+        });
         return;
       }
 
       localStorage.setItem('state:groups', JSON.stringify(groups));
       localStorage.setItem('state:courses', JSON.stringify(courses));
       sessionStorage.setItem('state:options', JSON.stringify(options));
+
+      // Track successful navigation to schedules
+      track(ANALYTICS_EVENTS.PAGE_NAVIGATED, {
+        from_page: 'set_options',
+        to_page: 'schedules',
+        navigation_method: 'form_submission',
+        course_count: courses.length,
+        leveled_course_count: leveledCourses.length,
+        timestamp: Date.now(),
+      });
 
       navigate('/schedules', {
         state: {

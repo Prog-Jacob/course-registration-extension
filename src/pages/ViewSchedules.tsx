@@ -1,3 +1,4 @@
+import { useAnalytics, ANALYTICS_EVENTS, trackAsyncPerformance } from '../services/analytics';
 import { SessionTable } from '../components/sessions_table';
 import { Alert, Box, Button, Slider } from '@mui/material';
 import { Course, ScheduleOptions } from '../types/course';
@@ -29,15 +30,59 @@ function ViewSchedules() {
 
   const componentRef = useRef(null);
   const navigate = useNavigate();
+  const { track } = useAnalytics();
+
+  // Track page view
+  useEffect(() => {
+    track(ANALYTICS_EVENTS.PAGE_NAVIGATED, {
+      page: 'view_schedules',
+      timestamp: Date.now(),
+      course_count: courses.flat().length,
+      course_groups: courses.length,
+      has_groups: Object.keys(groups).length > 0,
+    });
+  }, [track, courses, groups]);
 
   useEffect(() => {
     async function setScheduler() {
       try {
-        const scheduler = new Scheduler([...courses], { ...options }, { ...groups });
-        await scheduler.init();
+        // Use performance tracking utility for scheduler initialization
+        const { result: scheduler, duration } = await trackAsyncPerformance(
+          'scheduler_init',
+          async () => {
+            const scheduler = new Scheduler([...courses], { ...options }, { ...groups });
+            await scheduler.init();
+            return scheduler;
+          },
+          {
+            trackEvent: true,
+            eventName: ANALYTICS_EVENTS.SCHEDULING_PERFORMANCE,
+            additionalProperties: {
+              course_count: courses.flat().length,
+              timestamp: Date.now(),
+            },
+          }
+        );
+
         setSchedules(scheduler);
+
+        // Track successful scheduler initialization
+        track(ANALYTICS_EVENTS.SCHEDULE_GENERATION_SUCCESS, {
+          operation: 'scheduler_init',
+          duration_ms: duration,
+          course_count: courses.flat().length,
+          timestamp: Date.now(),
+        });
       } catch (e) {
         setSchedules((e as Error).message);
+
+        // Track scheduler initialization error
+        track(ANALYTICS_EVENTS.SCHEDULE_GENERATION_FAILED, {
+          error_type: 'scheduler_init_failed',
+          error_message: (e as Error).message,
+          course_count: courses.flat().length,
+          timestamp: Date.now(),
+        });
       }
     }
     setScheduler();
@@ -52,8 +97,38 @@ function ViewSchedules() {
     const solutions = (async () => {
       if (schedules instanceof Scheduler) {
         try {
-          return await schedules.getSolutions();
+          // Use performance tracking utility for solution generation
+          const { result, duration } = await trackAsyncPerformance(
+            'get_solutions',
+            async () => await schedules.getSolutions(),
+            {
+              trackEvent: true,
+              eventName: ANALYTICS_EVENTS.SCHEDULING_PERFORMANCE,
+              additionalProperties: {
+                course_count: courses.flat().length,
+                timestamp: Date.now(),
+              },
+            }
+          );
+
+          // Track successful schedule generation
+          if (Array.isArray(result)) {
+            track(ANALYTICS_EVENTS.SCHEDULE_GENERATION_SUCCESS, {
+              solution_count: result.length,
+              course_count: courses.flat().length,
+              timestamp: Date.now(),
+            });
+          }
+
+          return result;
         } catch (e: unknown) {
+          // Track solution generation error
+          track(ANALYTICS_EVENTS.SCHEDULE_GENERATION_FAILED, {
+            error_type: 'solution_generation_failed',
+            error_message: (e as Error).message,
+            course_count: courses.flat().length,
+            timestamp: Date.now(),
+          });
           return (e as Error).message;
         }
       }
@@ -63,11 +138,30 @@ function ViewSchedules() {
   };
 
   const backToCourses = () => {
+    track(ANALYTICS_EVENTS.PAGE_NAVIGATED, {
+      from_page: 'view_schedules',
+      to_page: 'set_options',
+      navigation_method: 'button_click',
+      timestamp: Date.now(),
+    });
     navigate('/courses');
   };
 
   const handlePrint = useReactToPrint({
-    onPrintError: (error) => console.log(error),
+    onPrintError: (error) => {
+      console.log(error);
+      track(ANALYTICS_EVENTS.ERROR_OCCURRED, {
+        error_type: 'print_failed',
+        error_message: error,
+        timestamp: Date.now(),
+      });
+    },
+    onAfterPrint: () => {
+      track(ANALYTICS_EVENTS.SCHEDULE_PRINTED, {
+        timestamp: Date.now(),
+        course_count: courses.flat().length,
+      });
+    },
     content: () => componentRef.current ?? null,
     removeAfterPrint: true,
   });

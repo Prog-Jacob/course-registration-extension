@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { ChangeEvent, Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { useAnalytics, ANALYTICS_EVENTS } from '../services/analytics';
 import { CourseOptions, ScheduleOptions } from '../types/course';
 import { BsFillArrowRightCircleFill } from 'react-icons/bs';
 import reactStringReplace from 'react-string-replace';
@@ -39,33 +40,83 @@ export function FormOptions({
   const [considerDisabled, setConsiderDisabled] = useState(options.considerDisabled);
   const [creditRange, setCreditRange] = useState([options.minCredits, options.maxCredits]);
   const [showSchedule, setShowSchedule] = useState(false);
+  const { track } = useAnalytics();
 
   const toggleSchedule = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setShowSchedule(!showSchedule);
+
+    // Track schedule preview toggle
+    track(ANALYTICS_EVENTS.SCHEDULE_OPTIONS_CHANGED, {
+      action: 'schedule_preview_toggled',
+      show_schedule: !showSchedule,
+      timestamp: Date.now(),
+    });
   };
 
   const handleSliderChange = (_: unknown, newValue: number | number[]) => {
     if (typeof newValue == 'number') return;
+    const oldMin = options.minCredits;
+    const oldMax = options.maxCredits;
+
     options.minCredits = newValue[0];
     options.maxCredits = newValue[1];
     setCreditRange(newValue);
+
+    // Track credit range change
+    track(ANALYTICS_EVENTS.SCHEDULE_OPTIONS_CHANGED, {
+      action: 'credit_range_changed',
+      old_min_credits: oldMin,
+      old_max_credits: oldMax,
+      new_min_credits: newValue[0],
+      new_max_credits: newValue[1],
+      timestamp: Date.now(),
+    });
   };
 
   const handlePreferMin = (e: ChangeEvent<HTMLInputElement>) => {
+    const oldValue = options.preferMin;
     options.preferMin = e.target.checked;
     setPreferMin(options.preferMin);
+
+    // Track prefer min change
+    track(ANALYTICS_EVENTS.SCHEDULE_OPTIONS_CHANGED, {
+      action: 'prefer_min_changed',
+      old_value: oldValue,
+      new_value: e.target.checked,
+      timestamp: Date.now(),
+    });
   };
 
   const handleConsiderDisabled = (e: ChangeEvent<HTMLInputElement>) => {
+    const oldValue = options.considerDisabled;
     options.considerDisabled = e.target.checked;
     setConsiderDisabled(options.considerDisabled);
+
+    // Track consider disabled change
+    track(ANALYTICS_EVENTS.SCHEDULE_OPTIONS_CHANGED, {
+      action: 'consider_disabled_changed',
+      old_value: oldValue,
+      new_value: e.target.checked,
+      timestamp: Date.now(),
+    });
   };
 
   const handlePriorityReverse = (i: number) => {
     return (e: ChangeEvent<HTMLInputElement>) => {
+      const oldValue = priorities[i].reverse;
       priorities[i].reverse = e.target.checked;
       setPriorities([...priorities]);
+
+      // Track priority reverse change
+      track(ANALYTICS_EVENTS.SCHEDULE_OPTIONS_CHANGED, {
+        action: 'priority_reverse_changed',
+        priority_index: i,
+        priority_id: priorities[i].id,
+        old_value: oldValue,
+        new_value: e.target.checked,
+        timestamp: Date.now(),
+      });
     };
   };
 
@@ -80,6 +131,15 @@ export function FormOptions({
     const destinationPriority = priorities.splice(s, 1);
     priorities.splice(e, 0, ...destinationPriority);
     setPriorities([...priorities]);
+
+    // Track priority reordering
+    track(ANALYTICS_EVENTS.SCHEDULE_OPTIONS_CHANGED, {
+      action: 'priority_reordered',
+      source_index: s,
+      destination_index: e,
+      priority_id: destinationPriority[0].id,
+      timestamp: Date.now(),
+    });
   };
 
   useEffect(() => {

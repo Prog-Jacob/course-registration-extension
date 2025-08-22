@@ -1,8 +1,10 @@
 import { Alert, Box, Button, CircularProgress, Stack } from '@mui/material';
+import { useAnalytics, ANALYTICS_EVENTS } from '../services/analytics';
 import { DOMResponse } from '../types/DOM_messages';
 import React, { useEffect, useState } from 'react';
 import { DOMErrors } from '../types/DOM_messages';
 import { useNavigate } from 'react-router-dom';
+import packageInfo from '../../package.json';
 import { Course } from '../types/course';
 import TestData from '../TestData.json';
 
@@ -10,9 +12,25 @@ const chrome = window.chrome;
 
 function Home() {
   const navigate = useNavigate();
+  const { track } = useAnalytics();
   const [response, setResponse] = useState<DOMResponse>(['00']);
 
+  // Track extension activation
+  useEffect(() => {
+    track(ANALYTICS_EVENTS.EXTENSION_ACTIVATED, {
+      timestamp: Date.now(),
+      user_agent: navigator.userAgent,
+      app_version: packageInfo.version,
+    });
+  }, [track]);
+
   const navigateToBenchmark = () => {
+    track(ANALYTICS_EVENTS.PAGE_NAVIGATED, {
+      from_page: 'home',
+      to_page: 'benchmark',
+      navigation_method: 'button_click',
+    });
+
     if (chrome?.tabs?.create) {
       chrome.tabs.create({ url: document.URL + '#/benchmark' });
     } else {
@@ -21,6 +39,14 @@ function Home() {
   };
 
   const navigateToCourses = (courses: Course[]) => {
+    track(ANALYTICS_EVENTS.PAGE_NAVIGATED, {
+      from_page: 'home',
+      to_page: 'courses',
+      navigation_method: 'button_click',
+      has_courses: !!courses,
+      course_count: courses?.length || 0,
+    });
+
     if (chrome?.tabs?.create) {
       chrome.tabs.create({ url: document.URL + '#/courses' });
     } else {
@@ -35,6 +61,13 @@ function Home() {
     }
   };
 
+  // If DOM scraping returned courses, navigate programmatically (do not render void in JSX)
+  useEffect(() => {
+    if (response && response.length && typeof response[0] !== 'string') {
+      navigateToCourses(response as Course[]);
+    }
+  }, [response]);
+
   useEffect(() => {
     if (chrome?.tabs) {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -45,11 +78,32 @@ function Home() {
           setResponse(undefined);
           chrome.tabs.sendMessage(tab.id, { type: 'GET_Courses' }, (response: DOMResponse) => {
             setResponse(response);
+
+            // Track course loading result
+            if (response && response.length > 0) {
+              if (typeof response[0] === 'string') {
+                // Error occurred
+                track(ANALYTICS_EVENTS.DOM_PARSE_FAILED, {
+                  error_code: response[0],
+                  error_message: DOMErrors[response[0] as string],
+                  url: url,
+                  timestamp: Date.now(),
+                });
+              } else {
+                // Success - courses loaded
+                track(ANALYTICS_EVENTS.COURSES_LOADED, {
+                  course_count: response.length,
+                  url: url,
+                  timestamp: Date.now(),
+                  source: 'sis_page',
+                });
+              }
+            }
           });
         }
       });
     }
-  }, [chrome?.tabs?.sendMessage, chrome?.tabs?.query, chrome?.runtime?.onMessage]);
+  }, [chrome?.tabs?.sendMessage, chrome?.tabs?.query, chrome?.runtime?.onMessage, track]);
 
   return (
     <>
@@ -57,9 +111,7 @@ function Home() {
         <Stack sx={{ color: 'var(--secondary)' }} spacing={2} direction='row'>
           <CircularProgress color='inherit' />
         </Stack>
-      ) : response.length && typeof response[0] != 'string' ? (
-        navigateToCourses(response as Course[])
-      ) : (
+      ) : typeof response[0] === 'string' ? (
         <Alert
           id='SubmitAlert'
           sx={{
@@ -71,7 +123,7 @@ function Home() {
         >
           {DOMErrors[response[0] as string]}
         </Alert>
-      )}
+      ) : null}
       {'\nor\n'}
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         {process.env.REACT_APP_DEBUG_ENV === 'benchmark' && (
